@@ -55,6 +55,11 @@ public class StoreRecordInfo implements Serializable {
     private BigDecimal price;
 
     /**
+     * 总价格
+     */
+    private BigDecimal totalPrice;
+
+    /**
      * 创建时间
      */
     private String createDate;

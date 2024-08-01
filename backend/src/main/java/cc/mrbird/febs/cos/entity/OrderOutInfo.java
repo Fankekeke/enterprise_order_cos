@@ -75,6 +75,12 @@ public class OrderOutInfo implements Serializable {
     private Integer orderId;
 
     /**
+     * 库房记录
+     */
+    @TableField(exist = false)
+    private String storeRecord;
+
+    /**
      * 用户名称
      */
     @TableField(exist = false)

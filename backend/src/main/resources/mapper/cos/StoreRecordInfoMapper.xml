@@ -11,6 +11,7 @@
         sri.`type`,
         sri.order_number,
         sri.price,
+        sri.total_price,
         sri.create_date,
         ci.name,
         ci.model,
