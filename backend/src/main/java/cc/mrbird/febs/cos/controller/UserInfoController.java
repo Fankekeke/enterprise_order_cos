@@ -4,11 +4,14 @@ package cc.mrbird.febs.cos.controller;
 import cc.mrbird.febs.common.utils.R;
 import cc.mrbird.febs.cos.entity.UserInfo;
 import cc.mrbird.febs.cos.service.IUserInfoService;
+import cn.hutool.core.date.DateUtil;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -33,6 +36,19 @@ public class UserInfoController {
     @GetMapping("/page")
     public R page(Page<UserInfo> page, UserInfo userInfo) {
         return R.ok(userInfoService.selectUserPage(page, userInfo));
+    }
+
+    /**
+     * 管理员用户审核
+     *
+     * @param userId 用户ID
+     * @param status 审核状态
+     * @return 结果
+     */
+    @GetMapping("/audit")
+    public R audit(Integer userId, String status) {
+        return R.ok(userInfoService.update(Wrappers.<UserInfo>lambdaUpdate().set(UserInfo::getStatus, status)
+                .set(UserInfo::getAuditDate, DateUtil.formatDateTime(new Date())).eq(UserInfo::getId, userId)));
     }
 
     /**

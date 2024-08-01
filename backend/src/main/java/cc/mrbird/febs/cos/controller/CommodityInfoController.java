@@ -4,6 +4,7 @@ package cc.mrbird.febs.cos.controller;
 import cc.mrbird.febs.common.utils.R;
 import cc.mrbird.febs.cos.entity.CommodityInfo;
 import cc.mrbird.febs.cos.service.ICommodityInfoService;
+import cc.mrbird.febs.cos.service.ICommodityRebateInfoService;
 import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,8 @@ import java.util.List;
 public class CommodityInfoController {
 
     private final ICommodityInfoService commodityInfoService;
+
+    private final ICommodityRebateInfoService commodityRebateInfoService;
 
     /**
      * 分页获取商品信息
@@ -70,7 +73,8 @@ public class CommodityInfoController {
         commodityInfo.setCode("CDY-" + System.currentTimeMillis());
         // 创建时间
         commodityInfo.setCreateDate(DateUtil.formatDateTime(new Date()));
-        return R.ok(commodityInfoService.save(commodityInfo));
+        commodityInfoService.save(commodityInfo);
+        return R.ok(commodityRebateInfoService.addRebate(commodityInfo.getId(), commodityInfo.getSellPrice()));
     }
 
     /**

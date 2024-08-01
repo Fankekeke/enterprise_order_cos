@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.apache.ibatis.annotations.Param;
 
+import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 
 /**
@@ -23,4 +24,13 @@ public interface ICommodityRebateInfoService extends IService<CommodityRebateInf
      * @return 结果
      */
     IPage<LinkedHashMap<String, Object>> selectRebatePage(Page<CommodityRebateInfo> page, CommodityRebateInfo commodityRebateInfo);
+
+    /**
+     * 添加商品后保存默认商品折扣
+     *
+     * @param commodityId 商品ID
+     * @param price       商品价格
+     * @return 结果
+     */
+    boolean addRebate(Integer commodityId, BigDecimal price);
 }

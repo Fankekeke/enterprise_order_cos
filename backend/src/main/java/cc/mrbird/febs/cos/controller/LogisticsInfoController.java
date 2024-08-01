@@ -5,6 +5,7 @@ import cc.mrbird.febs.common.utils.R;
 import cc.mrbird.febs.cos.entity.LogisticsInfo;
 import cc.mrbird.febs.cos.service.ILogisticsInfoService;
 import cn.hutool.core.date.DateUtil;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,21 @@ public class LogisticsInfoController {
     @GetMapping("/page")
     public R page(Page<LogisticsInfo> page, LogisticsInfo logisticsInfo) {
         return R.ok(logisticsInfoService.selectLogisticsPage(page, logisticsInfo));
+    }
+
+    /**
+     * 更新订单物流
+     *
+     * @param logisticsInfo 物流信息
+     * @return 结果
+     */
+    @PutMapping("/updateLogisticsOrder")
+    public R updateLogisticsOrder(LogisticsInfo logisticsInfo) {
+        // 设置其他物流信息
+        logisticsInfoService.update(Wrappers.<LogisticsInfo>lambdaUpdate().set(LogisticsInfo::getCurrentLogistics, 0).eq(LogisticsInfo::getOrderId, logisticsInfo.getOrderId()));
+        // 物流更新时间
+        logisticsInfo.setCreateDate(DateUtil.formatDateTime(new Date()));
+        return R.ok(logisticsInfoService.save(logisticsInfo));
     }
 
     /**

@@ -29,4 +29,15 @@ public class OrderOutInfoServiceImpl extends ServiceImpl<OrderOutInfoMapper, Ord
     public IPage<LinkedHashMap<String, Object>> selectOrderOutPage(Page<OrderOutInfo> page, OrderOutInfo orderOutInfo) {
         return baseMapper.selectOrderOutPage(page, orderOutInfo);
     }
+
+    /**
+     * 添加库房出库
+     *
+     * @param orderOutInfo 出库信息
+     * @return 结果
+     */
+    @Override
+    public boolean addOrderOut(OrderOutInfo orderOutInfo) {
+        return false;
+    }
 }

@@ -3,11 +3,14 @@ package cc.mrbird.febs.cos.service.impl;
 import cc.mrbird.febs.cos.entity.CommodityRebateInfo;
 import cc.mrbird.febs.cos.dao.CommodityRebateInfoMapper;
 import cc.mrbird.febs.cos.service.ICommodityRebateInfoService;
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.LinkedHashMap;
 
 /**
@@ -28,5 +31,30 @@ public class CommodityRebateInfoServiceImpl extends ServiceImpl<CommodityRebateI
     @Override
     public IPage<LinkedHashMap<String, Object>> selectRebatePage(Page<CommodityRebateInfo> page, CommodityRebateInfo commodityRebateInfo) {
         return baseMapper.selectRebatePage(page, commodityRebateInfo);
+    }
+
+    /**
+     * 添加商品后保存默认商品折扣
+     *
+     * @param commodityId 商品ID
+     * @param price       商品价格
+     * @return 结果
+     */
+    @Override
+    public boolean addRebate(Integer commodityId, BigDecimal price) {
+        CommodityRebateInfo commodityRebate = new CommodityRebateInfo();
+        // 编号
+        commodityRebate.setCode("REB-" + System.currentTimeMillis());
+        // 商品ID
+        commodityRebate.setCommodityId(commodityId);
+
+        commodityRebate.setLowRate(price);
+        commodityRebate.setNormalPrice(price);
+        commodityRebate.setSpecialPrice(price);
+
+        commodityRebate.setLowRestriction(0);
+        commodityRebate.setSpecialRestriction(0);
+        commodityRebate.setCreateDate(DateUtil.formatDateTime(new Date()));
+        return this.save(commodityRebate);
     }
 }
