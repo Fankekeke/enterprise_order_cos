@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.io.Serializable;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -47,5 +48,27 @@ public class LogisticsInfo implements Serializable {
      */
     private Integer currentLogistics;
 
+    /**
+     * 订单编号
+     */
+    @TableField(exist = false)
+    private String code;
 
+    /**
+     * 所属用户
+     */
+    @TableField(exist = false)
+    private String name;
+
+    /**
+     * 详细地址
+     */
+    @TableField(exist = false)
+    private String address;
+
+    /**
+     * 联系人
+     */
+    @TableField(exist = false)
+    private String contact;
 }

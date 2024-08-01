@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.io.Serializable;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -57,5 +58,15 @@ public class StockAlertInfo implements Serializable {
      */
     private Integer putNum;
 
+    /**
+     * 商品名称
+     */
+    @TableField(exist = false)
+    private String name;
 
+    /**
+     * 商品型号
+     */
+    @TableField(exist = false)
+    private String model;
 }

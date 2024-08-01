@@ -3,7 +3,9 @@ package cc.mrbird.febs.cos.controller;
 
 import cc.mrbird.febs.common.utils.R;
 import cc.mrbird.febs.cos.entity.AddressInfo;
+import cc.mrbird.febs.cos.entity.UserInfo;
 import cc.mrbird.febs.cos.service.IAddressInfoService;
+import cc.mrbird.febs.cos.service.IUserInfoService;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -25,6 +27,8 @@ import java.util.List;
 public class AddressInfoController {
 
     private final IAddressInfoService addressInfoService;
+
+    private final IUserInfoService userInfoService;
 
     /**
      * 分页获取用户收货地址信息
@@ -67,6 +71,15 @@ public class AddressInfoController {
      */
     @PostMapping
     public R save(AddressInfo addressInfo) {
+        // 地址编号
+        addressInfo.setCode("ARS-" + System.currentTimeMillis());
+        // 创建时间
+        addressInfo.setCreateDate(DateUtil.formatDateTime(new Date()));
+        // 获取用户信息
+        UserInfo user = userInfoService.getById(addressInfo.getUserId());
+        if (user != null) {
+            addressInfo.setUserId(user.getId());
+        }
         return R.ok(addressInfoService.save(addressInfo));
     }
 

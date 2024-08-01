@@ -4,11 +4,13 @@ package cc.mrbird.febs.cos.controller;
 import cc.mrbird.febs.common.utils.R;
 import cc.mrbird.febs.cos.entity.OrderPutInfo;
 import cc.mrbird.febs.cos.service.IOrderPutInfoService;
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -32,7 +34,7 @@ public class OrderPutInfoController {
      */
     @GetMapping("/page")
     public R page(Page<OrderPutInfo> page, OrderPutInfo orderPutInfo) {
-        return R.ok();
+        return R.ok(orderPutInfoService.selectOrderPutPage(page, orderPutInfo));
     }
 
     /**
@@ -64,6 +66,10 @@ public class OrderPutInfoController {
      */
     @PostMapping
     public R save(OrderPutInfo orderPutInfo) {
+        // 出库单号
+        orderPutInfo.setCode("OUT-" + System.currentTimeMillis());
+        // 创建时间
+        orderPutInfo.setCreateDate(DateUtil.formatDateTime(new Date()));
         return R.ok(orderPutInfoService.save(orderPutInfo));
     }
 

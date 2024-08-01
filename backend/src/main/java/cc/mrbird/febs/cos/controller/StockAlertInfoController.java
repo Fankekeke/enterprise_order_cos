@@ -32,7 +32,7 @@ public class StockAlertInfoController {
      */
     @GetMapping("/page")
     public R page(Page<StockAlertInfo> page, StockAlertInfo stockAlertInfo) {
-        return R.ok();
+        return R.ok(stockAlertInfoService.selectStockAlertPage(page, stockAlertInfo));
     }
 
     /**

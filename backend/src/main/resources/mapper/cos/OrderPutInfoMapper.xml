@@ -1,5 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cc.mrbird.febs.cos.mapper.OrderPutInfoMapper">
+<mapper namespace="cc.mrbird.febs.cos.dao.OrderPutInfoMapper">
 
+    <!-- 分页获取库房入库信息 -->
+    <select id="selectOrderPutPage" resultType="java.util.LinkedHashMap">
+        select
+        id,
+        code,
+        name,
+        total_price,
+        put_user,
+        remark,
+        create_date
+        from
+        order_put_info
+        where 1 = 1
+        <if test="orderPutInfo.code != null and orderPutInfo.code != ''">
+            AND code LIKE CONCAT('%',#{orderPutInfo.code},'%')
+        </if>
+        <if test="orderPutInfo.name != null and orderPutInfo.name != ''">
+            AND name LIKE CONCAT('%',#{orderPutInfo.name},'%')
+        </if>
+        <if test="orderPutInfo.putUser != null and orderPutInfo.putUser != ''">
+            AND put_user LIKE CONCAT('%',#{orderPutInfo.putUser},'%')
+        </if>
+        order by create_date desc
+
+    </select>
 </mapper>

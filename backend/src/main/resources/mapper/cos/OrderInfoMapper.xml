@@ -1,5 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cc.mrbird.febs.cos.mapper.OrderInfoMapper">
+<mapper namespace="cc.mrbird.febs.cos.dao.OrderInfoMapper">
 
+    <!-- 分页获取订单信息 -->
+    <select id="selectOrderPage" resultType="java.util.LinkedHashMap">
+        select
+        oi.id,
+        oi.code,
+        oi.user_id,
+        oi.total_price,
+        oi.`type`,
+        oi.subsist_price,
+        oi.owe_price,
+        oi.status,
+        oi.address_id,
+        oi.create_date,
+        oi.pay_date,
+        oi.owe_date,
+        ui.name as userName,
+        ui.images,
+        ai.address,
+        ai.contact,
+        ai.phone
+        from
+        order_info oi
+        left join user_info ui on (ui.id = oi.user_id)
+        left join address_info ai on (ai.id = oi.address_id)
+        where 1 = 1
+        <if test="orderInfo.code != null and orderInfo.code != ''">
+            AND oi.code LIKE CONCAT('%',#{orderInfo.code},'%')
+        </if>
+        <if test="orderInfo.name != null and orderInfo.name != ''">
+            AND ui.name LIKE CONCAT('%',#{orderInfo.name},'%')
+        </if>
+        <if test="orderInfo.address != null and orderInfo.address != ''">
+            AND ai.address LIKE CONCAT('%',#{orderInfo.address},'%')
+        </if>
+        <if test="orderInfo.contact != null and orderInfo.contact != ''">
+            AND ai.contact LIKE CONCAT('%',#{orderInfo.contact},'%')
+        </if>
+        order by oi.create_date desc
+    </select>
 </mapper>

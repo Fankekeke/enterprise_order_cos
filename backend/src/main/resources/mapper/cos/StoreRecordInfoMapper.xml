@@ -1,5 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cc.mrbird.febs.cos.mapper.StoreRecordInfoMapper">
+<mapper namespace="cc.mrbird.febs.cos.dao.StoreRecordInfoMapper">
 
+    <!-- 分页获取库房记录信息 -->
+    <select id="selectStoreRecordPage" resultType="java.util.LinkedHashMap">
+        select
+        sri.id,
+        sri.commodity_code,
+        sri.num,
+        sri.`type`,
+        sri.order_number,
+        sri.price,
+        sri.create_date,
+        ci.name,
+        ci.model,
+        ci.unit,
+        ci.images,
+        ct.name as typeName
+        from
+        store_record_info sri
+        left join commodity_info ci on
+        (ci.code = sri.commodity_code)
+        left join commodity_type ct on
+        (ct.id = ci.type_id)
+        where
+        1 = 1
+        <if test="storeRecordInfo.type != null and storeRecordInfo.type != ''">
+            AND sri.type = #{storeRecordInfo.type}
+        </if>
+        <if test="storeRecordInfo.name != null and storeRecordInfo.name != ''">
+            AND ci.name LIKE CONCAT('%',#{storeRecordInfo.name},'%')
+        </if>
+        <if test="storeRecordInfo.model != null and storeRecordInfo.model != ''">
+            AND ci.model LIKE CONCAT('%',#{storeRecordInfo.model},'%')
+        </if>
+        order by
+        sri.create_date desc
+    </select>
 </mapper>

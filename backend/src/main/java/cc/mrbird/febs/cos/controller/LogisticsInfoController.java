@@ -4,11 +4,13 @@ package cc.mrbird.febs.cos.controller;
 import cc.mrbird.febs.common.utils.R;
 import cc.mrbird.febs.cos.entity.LogisticsInfo;
 import cc.mrbird.febs.cos.service.ILogisticsInfoService;
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -32,7 +34,7 @@ public class LogisticsInfoController {
      */
     @GetMapping("/page")
     public R page(Page<LogisticsInfo> page, LogisticsInfo logisticsInfo) {
-        return R.ok();
+        return R.ok(logisticsInfoService.selectLogisticsPage(page, logisticsInfo));
     }
 
     /**
@@ -64,6 +66,8 @@ public class LogisticsInfoController {
      */
     @PostMapping
     public R save(LogisticsInfo logisticsInfo) {
+        // 物流更新时间
+        logisticsInfo.setCreateDate(DateUtil.formatDateTime(new Date()));
         return R.ok(logisticsInfoService.save(logisticsInfo));
     }
 
