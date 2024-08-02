@@ -1,6 +1,5 @@
 package cc.mrbird.febs.cos.entity;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.io.Serializable;
 
@@ -12,14 +11,14 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 /**
- * 库房记录
+ * 预警配置
  *
  * @author FanK
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class StoreRecordInfo implements Serializable {
+public class AlertConfigurationInfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -30,34 +29,14 @@ public class StoreRecordInfo implements Serializable {
     private Integer id;
 
     /**
-     * 商品编号
+     * 商品类型
      */
-    private String commodityCode;
+    private Integer typeId;
 
     /**
-     * 数量
+     * 报警数量
      */
-    private Integer num;
-
-    /**
-     * 类型（0.库存 1.入库 2.出库）
-     */
-    private String type;
-
-    /**
-     * 出库或入库单号
-     */
-    private String orderNumber;
-
-    /**
-     * 出库或入库价格
-     */
-    private BigDecimal price;
-
-    /**
-     * 总价格
-     */
-    private BigDecimal totalPrice;
+    private Integer alertNum;
 
     /**
      * 创建时间
@@ -65,14 +44,19 @@ public class StoreRecordInfo implements Serializable {
     private String createDate;
 
     /**
-     * 商品名称
+     * 备注
+     */
+    private String remark;
+
+    /**
+     * 类型编号
+     */
+    @TableField(exist = false)
+    private String code;
+
+    /**
+     * 类型名称
      */
     @TableField(exist = false)
     private String name;
-
-    /**
-     * 商品型号
-     */
-    @TableField(exist = false)
-    private String model;
 }

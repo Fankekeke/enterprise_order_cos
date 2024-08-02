@@ -4,18 +4,23 @@ import cc.mrbird.febs.cos.entity.OrderOutInfo;
 import cc.mrbird.febs.cos.dao.OrderOutInfoMapper;
 import cc.mrbird.febs.cos.entity.StoreRecordInfo;
 import cc.mrbird.febs.cos.service.IOrderOutInfoService;
+import cc.mrbird.febs.cos.service.IStoreRecordInfoService;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 库房出库 实现层
@@ -23,7 +28,10 @@ import java.util.List;
  * @author FanK
  */
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class OrderOutInfoServiceImpl extends ServiceImpl<OrderOutInfoMapper, OrderOutInfo> implements IOrderOutInfoService {
+
+    private final IStoreRecordInfoService storeRecordInfoService;
 
     /**
      * 分页获取库房出库信息
@@ -44,6 +52,7 @@ public class OrderOutInfoServiceImpl extends ServiceImpl<OrderOutInfoMapper, Ord
      * @return 结果
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean addOrderOut(OrderOutInfo orderOutInfo) {
         // 获取出库信息
         List<StoreRecordInfo> storeRecordList = JSONUtil.toList(orderOutInfo.getStoreRecord(), StoreRecordInfo.class);
@@ -61,6 +70,31 @@ public class OrderOutInfoServiceImpl extends ServiceImpl<OrderOutInfoMapper, Ord
         }
         BigDecimal totalPrice = storeRecordList.stream().map(StoreRecordInfo::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
         orderOutInfo.setTotalPrice(totalPrice);
-        return false;
+
+        // 获取库房库存
+        List<String> commodityCodeList = storeRecordList.stream().map(StoreRecordInfo::getCommodityCode).collect(Collectors.toList());
+        List<StoreRecordInfo> storeRecords = storeRecordInfoService.list(Wrappers.<StoreRecordInfo>lambdaQuery().eq(StoreRecordInfo::getType, "0")
+                .in(StoreRecordInfo::getCommodityCode, commodityCodeList));
+        Map<String, StoreRecordInfo> storeMap = storeRecords.stream().collect(Collectors.toMap(StoreRecordInfo::getCommodityCode, e -> e));
+
+        // 更新库房库存
+        List<StoreRecordInfo> toUpdateList = new ArrayList<>();
+        for (StoreRecordInfo storeRecordInfo : storeRecordList) {
+            // 获取此商品库存
+            StoreRecordInfo currentStoreRecordInfo = storeMap.get(storeRecordInfo.getCommodityCode());
+            if (currentStoreRecordInfo == null) {
+                continue;
+            }
+            // 更新此商品库存
+            currentStoreRecordInfo.setNum(currentStoreRecordInfo.getNum() - storeRecordInfo.getNum());
+            toUpdateList.add(currentStoreRecordInfo);
+        }
+        storeRecordInfoService.updateBatchById(toUpdateList);
+
+        // 添加出库记录
+        storeRecordInfoService.saveBatch(storeRecordList);
+
+        // 保存出库单
+        return this.save(orderOutInfo);
     }
 }

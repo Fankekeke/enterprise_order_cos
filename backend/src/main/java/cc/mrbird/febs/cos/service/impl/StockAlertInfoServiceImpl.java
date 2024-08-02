@@ -29,4 +29,14 @@ public class StockAlertInfoServiceImpl extends ServiceImpl<StockAlertInfoMapper,
     public IPage<LinkedHashMap<String, Object>> selectStockAlertPage(Page<StockAlertInfo> page, StockAlertInfo stockAlertInfo) {
         return baseMapper.selectStockAlertPage(page, stockAlertInfo);
     }
+
+    /**
+     * 生成库存预警
+     *
+     * @return 结果
+     */
+    @Override
+    public boolean generateStoreAlert() {
+        return false;
+    }
 }

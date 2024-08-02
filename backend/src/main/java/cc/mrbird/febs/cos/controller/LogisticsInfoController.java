@@ -49,6 +49,7 @@ public class LogisticsInfoController {
         // 设置其他物流信息
         logisticsInfoService.update(Wrappers.<LogisticsInfo>lambdaUpdate().set(LogisticsInfo::getCurrentLogistics, 0).eq(LogisticsInfo::getOrderId, logisticsInfo.getOrderId()));
         // 物流更新时间
+        logisticsInfo.setCurrentLogistics(1);
         logisticsInfo.setCreateDate(DateUtil.formatDateTime(new Date()));
         return R.ok(logisticsInfoService.save(logisticsInfo));
     }

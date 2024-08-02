@@ -23,4 +23,11 @@ public interface IStockAlertInfoService extends IService<StockAlertInfo> {
      * @return 结果
      */
     IPage<LinkedHashMap<String, Object>> selectStockAlertPage(Page<StockAlertInfo> page, StockAlertInfo stockAlertInfo);
+
+    /**
+     * 生成库存预警
+     *
+     * @return 结果
+     */
+    boolean generateStoreAlert();
 }

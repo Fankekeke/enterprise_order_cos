@@ -38,6 +38,17 @@ public class OrderPutInfoController {
     }
 
     /**
+     * 添加库房入库
+     *
+     * @param orderPutInfo 入库信息
+     * @return 结果
+     */
+    @PostMapping("/addOrderPut")
+    public R addOrderPut(OrderPutInfo orderPutInfo) {
+        return R.ok(orderPutInfoService.addOrderPut(orderPutInfo));
+    }
+
+    /**
      * 查询库房入库信息详情
      *
      * @param id 主键ID
