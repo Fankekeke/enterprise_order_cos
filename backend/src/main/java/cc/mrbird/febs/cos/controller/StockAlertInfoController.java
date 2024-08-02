@@ -36,6 +36,16 @@ public class StockAlertInfoController {
     }
 
     /**
+     * 生成库存预警
+     *
+     * @return 结果
+     */
+    @GetMapping("/generateStoreAlert")
+    public R generateStoreAlert() {
+        return R.ok(stockAlertInfoService.generateStoreAlert());
+    }
+
+    /**
      * 查询库存预警信息详情
      *
      * @param id 主键ID

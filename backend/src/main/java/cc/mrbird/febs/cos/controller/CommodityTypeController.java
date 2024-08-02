@@ -3,6 +3,7 @@ package cc.mrbird.febs.cos.controller;
 
 import cc.mrbird.febs.common.utils.R;
 import cc.mrbird.febs.cos.entity.CommodityType;
+import cc.mrbird.febs.cos.service.IAlertConfigurationInfoService;
 import cc.mrbird.febs.cos.service.ICommodityTypeService;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
@@ -25,6 +26,8 @@ import java.util.List;
 public class CommodityTypeController {
 
     private final ICommodityTypeService commodityTypeService;
+
+    private final IAlertConfigurationInfoService alertConfigurationInfoService;
 
     /**
      * 分页获取商品类型信息
@@ -71,7 +74,9 @@ public class CommodityTypeController {
         commodityType.setCode("CT-" + System.currentTimeMillis());
         // 创建时间
         commodityType.setCreateDate(DateUtil.formatDateTime(new Date()));
-        return R.ok(commodityTypeService.save(commodityType));
+        commodityTypeService.save(commodityType);
+        // 添加默认预警配置
+        return R.ok(alertConfigurationInfoService.addDefaultConfiguration(commodityType.getId()));
     }
 
     /**

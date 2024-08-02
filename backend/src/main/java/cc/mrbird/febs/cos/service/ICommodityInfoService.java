@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  * 商品管理 service层
@@ -23,4 +24,12 @@ public interface ICommodityInfoService extends IService<CommodityInfo> {
      * @return 结果
      */
     IPage<LinkedHashMap<String, Object>> selectCommodityPage(Page<CommodityInfo> page, CommodityInfo commodityInfo);
+
+    /**
+     * 根据用户获取商品信息【动态价格】
+     *
+     * @param commodityInfo 商品信息
+     * @return 结果
+     */
+    List<CommodityInfo> selectCommodityByUser(CommodityInfo commodityInfo);
 }

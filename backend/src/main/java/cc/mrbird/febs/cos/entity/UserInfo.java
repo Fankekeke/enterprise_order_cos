@@ -82,5 +82,8 @@ public class UserInfo implements Serializable {
      */
     private String remark;
 
-
+    /**
+     * 所属账户
+     */
+    private Integer userId;
 }

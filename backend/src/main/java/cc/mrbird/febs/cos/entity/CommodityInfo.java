@@ -84,4 +84,10 @@ public class CommodityInfo implements Serializable {
      */
     @TableField(exist = false)
     private String typeName;
+
+    /**
+     * 用户账户ID
+     */
+    @TableField(exist = false)
+    private Integer userId;
 }

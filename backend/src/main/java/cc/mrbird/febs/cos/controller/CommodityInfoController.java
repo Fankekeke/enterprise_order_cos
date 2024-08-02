@@ -3,9 +3,11 @@ package cc.mrbird.febs.cos.controller;
 
 import cc.mrbird.febs.common.utils.R;
 import cc.mrbird.febs.cos.entity.CommodityInfo;
+import cc.mrbird.febs.cos.entity.CommodityRebateInfo;
 import cc.mrbird.febs.cos.service.ICommodityInfoService;
 import cc.mrbird.febs.cos.service.ICommodityRebateInfoService;
 import cn.hutool.core.date.DateUtil;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,17 @@ public class CommodityInfoController {
     @GetMapping("/page")
     public R page(Page<CommodityInfo> page, CommodityInfo commodityInfo) {
         return R.ok(commodityInfoService.selectCommodityPage(page, commodityInfo));
+    }
+
+    /**
+     * 根据用户获取商品信息【动态价格】
+     *
+     * @param commodityInfo 商品信息
+     * @return 结果
+     */
+    @GetMapping("/list/byUser")
+    public R selectCommodityByUser(CommodityInfo commodityInfo) {
+        return R.ok(commodityInfoService.selectCommodityByUser(commodityInfo));
     }
 
     /**
@@ -85,6 +98,9 @@ public class CommodityInfoController {
      */
     @PutMapping
     public R edit(CommodityInfo commodityInfo) {
+        // 修改商品折扣价格
+        commodityRebateInfoService.update(Wrappers.<CommodityRebateInfo>lambdaUpdate().set(CommodityRebateInfo::getNormalPrice, commodityInfo.getSellPrice())
+                .eq(CommodityRebateInfo::getCommodityId, commodityInfo.getId()));
         return R.ok(commodityInfoService.updateById(commodityInfo));
     }
 

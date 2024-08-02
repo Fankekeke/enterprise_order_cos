@@ -18,9 +18,17 @@ public interface IAlertConfigurationInfoService extends IService<AlertConfigurat
     /**
      * 分页获取报警配置
      *
-     * @param page         分页对象
+     * @param page                   分页对象
      * @param alertConfigurationInfo 报警配置
      * @return 结果
      */
     IPage<LinkedHashMap<String, Object>> selectAlertConfigurationPage(Page<AlertConfigurationInfo> page, AlertConfigurationInfo alertConfigurationInfo);
+
+    /**
+     * 添加默认预警配置
+     *
+     * @param typeId 类型ID
+     * @return 结果
+     */
+    boolean addDefaultConfiguration(Integer typeId);
 }
