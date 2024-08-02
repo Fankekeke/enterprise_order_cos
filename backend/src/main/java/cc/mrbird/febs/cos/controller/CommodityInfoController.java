@@ -4,13 +4,16 @@ package cc.mrbird.febs.cos.controller;
 import cc.mrbird.febs.common.utils.R;
 import cc.mrbird.febs.cos.entity.CommodityInfo;
 import cc.mrbird.febs.cos.entity.CommodityRebateInfo;
+import cc.mrbird.febs.cos.entity.StoreRecordInfo;
 import cc.mrbird.febs.cos.service.ICommodityInfoService;
 import cc.mrbird.febs.cos.service.ICommodityRebateInfoService;
+import cc.mrbird.febs.cos.service.IStoreRecordInfoService;
 import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -29,6 +32,8 @@ public class CommodityInfoController {
     private final ICommodityInfoService commodityInfoService;
 
     private final ICommodityRebateInfoService commodityRebateInfoService;
+
+    private final IStoreRecordInfoService storeRecordInfoService;
 
     /**
      * 分页获取商品信息
@@ -81,12 +86,22 @@ public class CommodityInfoController {
      * @return 结果
      */
     @PostMapping
+    @Transactional(rollbackFor = Exception.class)
     public R save(CommodityInfo commodityInfo) {
         // 商品编号
         commodityInfo.setCode("CDY-" + System.currentTimeMillis());
         // 创建时间
         commodityInfo.setCreateDate(DateUtil.formatDateTime(new Date()));
         commodityInfoService.save(commodityInfo);
+
+        // 添加库存
+        StoreRecordInfo storeRecordInfo = new StoreRecordInfo();
+        storeRecordInfo.setCommodityCode(commodityInfo.getCode());
+        storeRecordInfo.setType("0");
+        storeRecordInfo.setNum(0);
+        storeRecordInfo.setCreateDate(DateUtil.formatDateTime(new Date()));
+        storeRecordInfoService.save(storeRecordInfo);
+
         return R.ok(commodityRebateInfoService.addRebate(commodityInfo.getId(), commodityInfo.getSellPrice()));
     }
 

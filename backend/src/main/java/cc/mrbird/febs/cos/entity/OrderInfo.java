@@ -101,4 +101,10 @@ public class OrderInfo implements Serializable {
      */
     @TableField(exist = false)
     private String contact;
+
+    /**
+     * 订单详情
+     */
+    @TableField(exist = false)
+    private String orderDetail;
 }

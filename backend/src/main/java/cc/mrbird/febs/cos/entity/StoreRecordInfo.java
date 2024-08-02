@@ -75,4 +75,16 @@ public class StoreRecordInfo implements Serializable {
      */
     @TableField(exist = false)
     private String model;
+
+    /**
+     * 商品类型ID
+     */
+    @TableField(exist = false)
+    private Integer typeId;
+
+    /**
+     * 商品类型
+     */
+    @TableField(exist = false)
+    private String typeName;
 }

@@ -1,5 +1,6 @@
 package cc.mrbird.febs.cos.service;
 
+import cc.mrbird.febs.common.exception.FebsException;
 import cc.mrbird.febs.cos.entity.OrderInfo;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -31,4 +32,19 @@ public interface IOrderInfoService extends IService<OrderInfo> {
      * @return 结果
      */
     LinkedHashMap<String, Object> selectOrderDetail(Integer orderId);
+
+    /**
+     * 用户添加订单
+     *
+     * @param orderInfo 订单信息
+     * @return 结果
+     */
+    boolean orderAdd(OrderInfo orderInfo) throws FebsException;
+
+    /**
+     * 管理员首页数据统计
+     *
+     * @return 结果
+     */
+    LinkedHashMap<String, Object> selectHomeData();
 }

@@ -38,4 +38,37 @@
         order by
         sri.create_date desc
     </select>
+
+    <!-- 根据年月获取商品出入库信息 -->
+    <select id="selectRecordBySlot" resultType="cc.mrbird.febs.cos.entity.StoreRecordInfo">
+        sri.id,
+        sri.commodity_code,
+        sri.num,
+        sri.`type`,
+        sri.order_number,
+        sri.price,
+        sri.total_price,
+        sri.create_date,
+        ct.id as typeId,
+        ct.name as typeName
+        from
+        store_record_info sri
+        left join commodity_info ci on
+        (ci.code = sri.commodity_code)
+        left join commodity_type ct on
+        (ct.id = ci.type_id)
+        where
+        1 = 1
+        <if test="type != null and type != ''">
+            AND sri.type = #{type}
+        </if>
+        <if test="year != null and year != ''">
+            AND DATE_FORMAT( oi.create_date, '%Y' ) = #{year}
+        </if>
+        <if test="month != null and month != ''">
+            AND DATE_FORMAT( oi.create_date, '%m' ) = #{month}
+        </if>
+        order by
+        sri.create_date desc
+    </select>
 </mapper>
