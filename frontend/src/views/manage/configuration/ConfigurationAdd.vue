@@ -1,20 +1,20 @@
 <template>
-  <a-modal v-model="show" title="新增库房出入库" @cancel="onClose" :width="800">
+  <a-modal v-model="show" title="新增预警配置" @cancel="onClose" :width="800">
     <template slot="footer">
       <a-button key="back" @click="onClose">
         取消
       </a-button>
-      <a-button key="submit" record="primary" :loading="loading" @click="handleSubmit">
+      <a-button key="submit" type="primary" :loading="loading" @click="handleSubmit">
         提交
       </a-button>
     </template>
     <a-form :form="form" layout="vertical">
       <a-row :gutter="20">
         <a-col :span="12">
-          <a-form-item label='库房出入库姓名' v-bind="formItemLayout">
+          <a-form-item label='预警配置姓名' v-bind="formItemLayout">
             <a-input disabled v-decorator="[
             'name',
-            { rules: [{ required: true, message: '请输入库房出入库姓名!' }] }
+            { rules: [{ required: true, message: '请输入预警配置姓名!' }] }
             ]"/>
           </a-form-item>
         </a-col>
@@ -121,13 +121,13 @@
             <a-upload
               name="avatar"
               action="http://127.0.0.1:9527/file/fileUpload/"
-              list-record="picture-card"
+              list-type="picture-card"
               :file-list="fileList"
               @preview="handlePreview"
               @change="picHandleChange"
             >
               <div v-if="fileList.length < 1">
-                <a-icon record="plus" />
+                <a-icon type="plus" />
                 <div class="ant-upload-text">
                   Upload
                 </div>
@@ -159,19 +159,19 @@ const formItemLayout = {
   wrapperCol: { span: 24 }
 }
 export default {
-  name: 'recordAdd',
+  name: 'configurationAdd',
   props: {
-    recordAddVisiable: {
+    configurationAddVisiable: {
       default: false
     }
   },
   computed: {
     ...mapState({
-      currentrecord: state => state.account.record
+      currentconfiguration: state => state.account.configuration
     }),
     show: {
       get: function () {
-        return this.recordAddVisiable
+        return this.configurationAddVisiable
       },
       set: function () {
       }
@@ -220,7 +220,7 @@ export default {
         values.birthday = moment(values.birthday).format('YYYY-MM-DD')
         if (!err) {
           this.loading = true
-          this.$post('/cos/record-info', {
+          this.$post('/cos/configuration-info', {
             ...values
           }).then((r) => {
             this.reset()

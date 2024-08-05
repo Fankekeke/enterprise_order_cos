@@ -1,20 +1,20 @@
 <template>
-  <a-modal v-model="show" title="新增库房出入库" @cancel="onClose" :width="800">
+  <a-modal v-model="show" title="修改预警配置" @cancel="onClose" :width="800">
     <template slot="footer">
       <a-button key="back" @click="onClose">
         取消
       </a-button>
-      <a-button key="submit" record="primary" :loading="loading" @click="handleSubmit">
-        提交
+      <a-button key="submit" type="primary" :loading="loading" @click="handleSubmit">
+        修改
       </a-button>
     </template>
     <a-form :form="form" layout="vertical">
       <a-row :gutter="20">
         <a-col :span="12">
-          <a-form-item label='库房出入库姓名' v-bind="formItemLayout">
+          <a-form-item label='预警配置姓名' v-bind="formItemLayout">
             <a-input disabled v-decorator="[
             'name',
-            { rules: [{ required: true, message: '请输入库房出入库姓名!' }] }
+            { rules: [{ required: true, message: '请输入预警配置姓名!' }] }
             ]"/>
           </a-form-item>
         </a-col>
@@ -121,13 +121,13 @@
             <a-upload
               name="avatar"
               action="http://127.0.0.1:9527/file/fileUpload/"
-              list-record="picture-card"
+              list-type="picture-card"
               :file-list="fileList"
               @preview="handlePreview"
               @change="picHandleChange"
             >
               <div v-if="fileList.length < 1">
-                <a-icon record="plus" />
+                <a-icon type="plus" />
                 <div class="ant-upload-text">
                   Upload
                 </div>
@@ -145,7 +145,8 @@
 
 <script>
 import {mapState} from 'vuex'
-import moment from "moment";
+import moment from 'moment'
+moment.locale('zh-cn')
 function getBase64 (file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
@@ -159,19 +160,19 @@ const formItemLayout = {
   wrapperCol: { span: 24 }
 }
 export default {
-  name: 'recordAdd',
+  name: 'configurationEdit',
   props: {
-    recordAddVisiable: {
+    configurationEditVisiable: {
       default: false
     }
   },
   computed: {
     ...mapState({
-      currentrecord: state => state.account.record
+      currentconfiguration: state => state.account.configuration
     }),
     show: {
       get: function () {
-        return this.recordAddVisiable
+        return this.configurationEditVisiable
       },
       set: function () {
       }
@@ -179,6 +180,7 @@ export default {
   },
   data () {
     return {
+      rowId: null,
       formItemLayout,
       form: this.$form.createForm(this),
       loading: false,
@@ -201,6 +203,36 @@ export default {
     picHandleChange ({ fileList }) {
       this.fileList = fileList
     },
+    imagesInit (images) {
+      if (images !== null && images !== '') {
+        let imageList = []
+        images.split(',').forEach((image, index) => {
+          imageList.push({uid: index, name: image, status: 'done', url: 'http://127.0.0.1:9527/imagesWeb/' + image})
+        })
+        this.fileList = imageList
+      }
+    },
+    setFormValues ({...configuration}) {
+      this.rowId = configuration.id
+      let fields = ['name', 'mail', 'phone', 'province', 'city', 'area', 'address', 'sex', 'birthday', 'height', 'weight', 'idCard']
+      let obj = {}
+      Object.keys(configuration).forEach((key) => {
+        if (key === 'images') {
+          this.fileList = []
+          this.imagesInit(configuration['images'])
+        }
+        if (key === 'birthday') {
+          if (key === 'birthday' && configuration[key] != null) {
+            configuration[key] = moment(configuration[key])
+          }
+        }
+        if (fields.indexOf(key) !== -1) {
+          this.form.getFieldDecorator(key)
+          obj[key] = configuration[key]
+        }
+      })
+      this.form.setFieldsValue(obj)
+    },
     reset () {
       this.loading = false
       this.form.resetFields()
@@ -213,14 +245,19 @@ export default {
       // 获取图片List
       let images = []
       this.fileList.forEach(image => {
-        images.push(image.response)
+        if (image.response !== undefined) {
+          images.push(image.response)
+        } else {
+          images.push(image.name)
+        }
       })
       this.form.validateFields((err, values) => {
+        values.id = this.rowId
         values.images = images.length > 0 ? images.join(',') : null
         values.birthday = moment(values.birthday).format('YYYY-MM-DD')
         if (!err) {
           this.loading = true
-          this.$post('/cos/record-info', {
+          this.$put('/cos/configuration-info', {
             ...values
           }).then((r) => {
             this.reset()

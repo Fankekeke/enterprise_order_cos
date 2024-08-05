@@ -13,6 +13,7 @@
         sri.price,
         sri.total_price,
         sri.create_date,
+        ci.code,
         ci.name,
         ci.model,
         ci.unit,

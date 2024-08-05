@@ -27,6 +27,9 @@
         <if test="commodityInfo.name != null and commodityInfo.name != ''">
             AND ci.name LIKE CONCAT('%',#{commodityInfo.name},'%')
         </if>
+        <if test="commodityInfo.model != null and commodityInfo.model != ''">
+            AND ci.model LIKE CONCAT('%',#{commodityInfo.model},'%')
+        </if>
         <if test="commodityInfo.typeName != null and commodityInfo.typeName != ''">
             AND ct.name LIKE CONCAT('%',#{commodityInfo.typeName},'%')
         </if>

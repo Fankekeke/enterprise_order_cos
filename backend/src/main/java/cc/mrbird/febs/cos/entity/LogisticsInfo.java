@@ -71,4 +71,10 @@ public class LogisticsInfo implements Serializable {
      */
     @TableField(exist = false)
     private String contact;
+
+    /**
+     * 所属用户
+     */
+    @TableField(exist = false)
+    private Integer userId;
 }

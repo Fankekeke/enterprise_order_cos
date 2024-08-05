@@ -7,7 +7,7 @@
           <div :class="advanced ? null: 'fold'">
             <a-col :md="6" :sm="24">
               <a-form-item
-                label="商品名称"
+                label="用户名称"
                 :labelCol="{span: 5}"
                 :wrapperCol="{span: 18, offset: 1}">
                 <a-input v-model="queryParams.name"/>
@@ -15,26 +15,15 @@
             </a-col>
             <a-col :md="6" :sm="24">
               <a-form-item
-                label="商品型号"
+                label="用户编号"
                 :labelCol="{span: 5}"
                 :wrapperCol="{span: 18, offset: 1}">
-                <a-input v-model="queryParams.model"/>
-              </a-form-item>
-            </a-col>
-            <a-col :md="6" :sm="24">
-              <a-form-item
-                label="处理状态"
-                :labelCol="{span: 5}"
-                :wrapperCol="{span: 18, offset: 1}">
-                <a-select v-model="queryParams.status">
-                  <a-select-option value="1">入库</a-select-option>
-                  <a-select-option value="2">出库</a-select-option>
-                </a-select>
+                <a-input v-model="queryParams.code"/>
               </a-form-item>
             </a-col>
           </div>
           <span style="float: right; margin-top: 3px;">
-            <a-button record="primary" @click="search">查询</a-button>
+            <a-button type="primary" @click="search">查询</a-button>
             <a-button style="margin-left: 8px" @click="reset">重置</a-button>
           </span>
         </a-row>
@@ -42,7 +31,8 @@
     </div>
     <div>
       <div class="operator">
-        <a-button record="primary" ghost @click="add">新增</a-button>
+        <a-button type="primary" ghost @click="add">新增</a-button>
+        <a-button @click="batchDelete">删除</a-button>
       </div>
       <!-- 表格区域 -->
       <a-table ref="TableInfo"
@@ -56,6 +46,8 @@
                @change="handleTableChange">
         <template slot="titleShow" slot-scope="text, record">
           <template>
+            <a-badge status="processing" v-if="record.rackUp === 1"/>
+            <a-badge status="error" v-if="record.rackUp === 0"/>
             <a-tooltip>
               <template slot="title">
                 {{ record.title }}
@@ -64,54 +56,64 @@
             </a-tooltip>
           </template>
         </template>
+        <template slot="contentShow" slot-scope="text, record">
+          <template>
+            <a-tooltip>
+              <template slot="title">
+                {{ record.content }}
+              </template>
+              {{ record.content.slice(0, 40) }} ...
+            </a-tooltip>
+          </template>
+        </template>
         <template slot="operation" slot-scope="text, record">
-          <a-icon record="cloud" @click="handlerecordViewOpen(record)" title="详 情" style="margin-right: 10px"></a-icon>
-          <a-icon record="setting" theme="twoTone" twoToneColor="#4a9ff5" @click="edit(record)" title="修 改" style="margin-right: 10px"></a-icon>
+          <a-icon type="setting" theme="twoTone" twoToneColor="#4a9ff5" @click="edit(record)" title="修 改"></a-icon>
+          <a-icon type="file-search" @click="addressViewOpen(record)" title="详 情" style="margin-left: 15px"></a-icon>
         </template>
       </a-table>
     </div>
-    <record-add
-      v-if="recordAdd.visiable"
-      @close="handlerecordAddClose"
-      @success="handlerecordAddSuccess"
-      :recordAddVisiable="recordAdd.visiable">
-    </record-add>
-    <record-edit
-      ref="recordEdit"
-      @close="handlerecordEditClose"
-      @success="handlerecordEditSuccess"
-      :recordEditVisiable="recordEdit.visiable">
-    </record-edit>
-    <record-view
-      @close="handlerecordViewClose"
-      :recordShow="recordView.visiable"
-      :recordData="recordView.data">
-    </record-view>
+    <address-add
+      v-if="addressAdd.visiable"
+      @close="handleaddressAddClose"
+      @success="handleaddressAddSuccess"
+      :addressAddVisiable="addressAdd.visiable">
+    </address-add>
+    <address-edit
+      ref="addressEdit"
+      @close="handleaddressEditClose"
+      @success="handleaddressEditSuccess"
+      :addressEditVisiable="addressEdit.visiable">
+    </address-edit>
+    <address-view
+      @close="handleaddressViewClose"
+      :addressShow="addressView.visiable"
+      :addressData="addressView.data">
+    </address-view>
   </a-card>
 </template>
 
 <script>
 import RangeDate from '@/components/datetime/RangeDate'
+import addressAdd from './AddressAdd'
+import addressEdit from './AddressEdit'
+import addressView from './AddressView.vue'
 import {mapState} from 'vuex'
-import recordAdd from './RecordAdd.vue'
-import recordEdit from './RecordEdit.vue'
-import recordView from './RecordView.vue'
 import moment from 'moment'
 moment.locale('zh-cn')
 
 export default {
-  name: 'record',
-  components: {RangeDate, recordAdd, recordEdit, recordView},
+  name: 'address',
+  components: {addressAdd, addressEdit, addressView, RangeDate},
   data () {
     return {
       advanced: false,
-      recordAdd: {
+      addressAdd: {
         visiable: false
       },
-      recordEdit: {
+      addressEdit: {
         visiable: false
       },
-      recordView: {
+      addressView: {
         visiable: false,
         data: null
       },
@@ -130,20 +132,17 @@ export default {
         showSizeChanger: true,
         showTotal: (total, range) => `显示 ${range[0]} ~ ${range[1]} 条记录，共 ${total} 条记录`
       },
-      recordList: []
+      userList: []
     }
   },
   computed: {
     ...mapState({
-      currentrecord: state => state.account.record
+      currentUser: state => state.account.user
     }),
     columns () {
       return [{
-        title: '商品名称',
-        dataIndex: 'name'
-      }, {
-        title: '商品型号',
-        dataIndex: 'model',
+        title: '所属用户',
+        dataIndex: 'name',
         customRender: (text, row, index) => {
           if (text !== null) {
             return text
@@ -152,27 +151,7 @@ export default {
           }
         }
       }, {
-        title: '单位',
-        dataIndex: 'unit',
-        customRender: (text, row, index) => {
-          if (text !== null) {
-            return text
-          } else {
-            return '- -'
-          }
-        }
-      }, {
-        title: '商品类型',
-        dataIndex: 'typeName',
-        customRender: (text, row, index) => {
-          if (text !== null) {
-            return text
-          } else {
-            return '- -'
-          }
-        }
-      }, {
-        title: '商品图片',
+        title: '头像',
         dataIndex: 'images',
         customRender: (text, record, index) => {
           if (!record.images) return <a-avatar shape="square" icon="user" />
@@ -184,31 +163,20 @@ export default {
           </a-popover>
         }
       }, {
-        title: '类型',
-        dataIndex: 'type',
-        customRender: (text, row, index) => {
-          switch (text) {
-            case 1:
-              return <a-tag color="green">入库</a-tag>
-            case 2:
-              return <a-tag color="red">出库</a-tag>
-            default:
-              return '- -'
-          }
-        }
+        title: '地址编号',
+        dataIndex: 'code'
       }, {
-        title: '操作数量',
-        dataIndex: 'num',
-        customRender: (text, row, index) => {
-          if (text !== null) {
-            return text
-          } else {
-            return '- -'
-          }
-        }
+        title: '省份',
+        dataIndex: 'province'
       }, {
-        title: '单号',
-        dataIndex: 'orderNumber',
+        title: '市',
+        dataIndex: 'city'
+      }, {
+        title: '区',
+        dataIndex: 'area'
+      }, {
+        title: '详细地址',
+        dataIndex: 'address',
         customRender: (text, row, index) => {
           if (text !== null) {
             return text
@@ -217,8 +185,8 @@ export default {
           }
         }
       }, {
-        title: '总价格',
-        dataIndex: 'totalPrice',
+        title: '联系人',
+        dataIndex: 'contactPerson',
         customRender: (text, row, index) => {
           if (text !== null) {
             return text
@@ -227,7 +195,17 @@ export default {
           }
         }
       }, {
-        title: '操作时间',
+        title: '联系方式',
+        dataIndex: 'contactMethod',
+        customRender: (text, row, index) => {
+          if (text !== null) {
+            return text
+          } else {
+            return '- -'
+          }
+        }
+      }, {
+        title: '创建时间',
         dataIndex: 'createDate',
         customRender: (text, row, index) => {
           if (text !== null) {
@@ -247,12 +225,12 @@ export default {
     this.fetch()
   },
   methods: {
-    handlerecordViewOpen (row) {
-      this.recordView.data = row
-      this.recordView.visiable = true
+    addressViewOpen (row) {
+      this.addressView.data = row
+      this.addressView.visiable = true
     },
-    handlerecordViewClose () {
-      this.recordView.visiable = false
+    handleaddressViewClose () {
+      this.addressView.visiable = false
     },
     onSelectChange (selectedRowKeys) {
       this.selectedRowKeys = selectedRowKeys
@@ -261,26 +239,26 @@ export default {
       this.advanced = !this.advanced
     },
     add () {
-      this.recordAdd.visiable = true
+      this.addressAdd.visiable = true
     },
-    handlerecordAddClose () {
-      this.recordAdd.visiable = false
+    handleaddressAddClose () {
+      this.addressAdd.visiable = false
     },
-    handlerecordAddSuccess () {
-      this.recordAdd.visiable = false
-      this.$message.success('新增库房出入库成功')
+    handleaddressAddSuccess () {
+      this.addressAdd.visiable = false
+      this.$message.success('新增用户地址成功')
       this.search()
     },
     edit (record) {
-      this.$refs.recordEdit.setFormValues(record)
-      this.recordEdit.visiable = true
+      this.$refs.addressEdit.setFormValues(record)
+      this.addressEdit.visiable = true
     },
-    handlerecordEditClose () {
-      this.recordEdit.visiable = false
+    handleaddressEditClose () {
+      this.addressEdit.visiable = false
     },
-    handlerecordEditSuccess () {
-      this.recordEdit.visiable = false
-      this.$message.success('修改产品成功')
+    handleaddressEditSuccess () {
+      this.addressEdit.visiable = false
+      this.$message.success('修改用户地址成功')
       this.search()
     },
     handleDeptChange (value) {
@@ -298,7 +276,7 @@ export default {
         centered: true,
         onOk () {
           let ids = that.selectedRowKeys.join(',')
-          that.$delete('/cos/record-info/' + ids).then(() => {
+          that.$delete('/cos/address-info/' + ids).then(() => {
             that.$message.success('删除成功')
             that.selectedRowKeys = []
             that.search()
@@ -368,10 +346,8 @@ export default {
         params.size = this.pagination.defaultPageSize
         params.current = this.pagination.defaultCurrent
       }
-      if (params.record === undefined) {
-        delete params.record
-      }
-      this.$get('/cos/record-info/page/list', {
+      params.userId = this.currentUser.userId
+      this.$get('/cos/address-info/page', {
         ...params
       }).then((r) => {
         let data = r.data.data

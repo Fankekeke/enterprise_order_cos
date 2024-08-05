@@ -81,6 +81,10 @@ public class AddressInfoController {
         if (user != null) {
             addressInfo.setUserId(user.getId());
         }
+        // 默认地址处理
+        if ("1".equals(addressInfo.getDefaultFlag())) {
+            addressInfoService.update(Wrappers.<AddressInfo>lambdaUpdate().set(AddressInfo::getDefaultFlag, "0").eq(AddressInfo::getUserId, addressInfo.getUserId()));
+        }
         return R.ok(addressInfoService.save(addressInfo));
     }
 
@@ -91,7 +95,10 @@ public class AddressInfoController {
      * @return 结果
      */
     @PutMapping
-    public R edit(AddressInfo addressInfo) {
+    public R edit(AddressInfo addressInfo) {// 默认地址处理
+        if ("1".equals(addressInfo.getDefaultFlag())) {
+            addressInfoService.update(Wrappers.<AddressInfo>lambdaUpdate().set(AddressInfo::getDefaultFlag, "0").eq(AddressInfo::getUserId, addressInfo.getUserId()));
+        }
         return R.ok(addressInfoService.updateById(addressInfo));
     }
 

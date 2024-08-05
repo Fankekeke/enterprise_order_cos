@@ -7,7 +7,7 @@
           <div :class="advanced ? null: 'fold'">
             <a-col :md="6" :sm="24">
               <a-form-item
-                label="商品名称"
+                label="商品类型"
                 :labelCol="{span: 5}"
                 :wrapperCol="{span: 18, offset: 1}">
                 <a-input v-model="queryParams.name"/>
@@ -15,26 +15,15 @@
             </a-col>
             <a-col :md="6" :sm="24">
               <a-form-item
-                label="商品型号"
+                label="类型编号"
                 :labelCol="{span: 5}"
                 :wrapperCol="{span: 18, offset: 1}">
-                <a-input v-model="queryParams.model"/>
-              </a-form-item>
-            </a-col>
-            <a-col :md="6" :sm="24">
-              <a-form-item
-                label="处理状态"
-                :labelCol="{span: 5}"
-                :wrapperCol="{span: 18, offset: 1}">
-                <a-select v-model="queryParams.status">
-                  <a-select-option value="1">入库</a-select-option>
-                  <a-select-option value="2">出库</a-select-option>
-                </a-select>
+                <a-input v-model="queryParams.code"/>
               </a-form-item>
             </a-col>
           </div>
           <span style="float: right; margin-top: 3px;">
-            <a-button record="primary" @click="search">查询</a-button>
+            <a-button type="primary" @click="search">查询</a-button>
             <a-button style="margin-left: 8px" @click="reset">重置</a-button>
           </span>
         </a-row>
@@ -42,7 +31,7 @@
     </div>
     <div>
       <div class="operator">
-        <a-button record="primary" ghost @click="add">新增</a-button>
+        <a-button type="primary" ghost @click="add">新增</a-button>
       </div>
       <!-- 表格区域 -->
       <a-table ref="TableInfo"
@@ -65,53 +54,53 @@
           </template>
         </template>
         <template slot="operation" slot-scope="text, record">
-          <a-icon record="cloud" @click="handlerecordViewOpen(record)" title="详 情" style="margin-right: 10px"></a-icon>
-          <a-icon record="setting" theme="twoTone" twoToneColor="#4a9ff5" @click="edit(record)" title="修 改" style="margin-right: 10px"></a-icon>
+          <a-icon type="cloud" @click="handletypeViewOpen(record)" title="详 情" style="margin-right: 10px"></a-icon>
+          <a-icon type="setting" theme="twoTone" twoToneColor="#4a9ff5" @click="edit(record)" title="修 改" style="margin-right: 10px"></a-icon>
         </template>
       </a-table>
     </div>
-    <record-add
-      v-if="recordAdd.visiable"
-      @close="handlerecordAddClose"
-      @success="handlerecordAddSuccess"
-      :recordAddVisiable="recordAdd.visiable">
-    </record-add>
-    <record-edit
-      ref="recordEdit"
-      @close="handlerecordEditClose"
-      @success="handlerecordEditSuccess"
-      :recordEditVisiable="recordEdit.visiable">
-    </record-edit>
-    <record-view
-      @close="handlerecordViewClose"
-      :recordShow="recordView.visiable"
-      :recordData="recordView.data">
-    </record-view>
+    <type-add
+      v-if="typeAdd.visiable"
+      @close="handletypeAddClose"
+      @success="handletypeAddSuccess"
+      :typeAddVisiable="typeAdd.visiable">
+    </type-add>
+    <type-edit
+      ref="typeEdit"
+      @close="handletypeEditClose"
+      @success="handletypeEditSuccess"
+      :typeEditVisiable="typeEdit.visiable">
+    </type-edit>
+    <type-view
+      @close="handletypeViewClose"
+      :typeShow="typeView.visiable"
+      :typeData="typeView.data">
+    </type-view>
   </a-card>
 </template>
 
 <script>
 import RangeDate from '@/components/datetime/RangeDate'
 import {mapState} from 'vuex'
-import recordAdd from './RecordAdd.vue'
-import recordEdit from './RecordEdit.vue'
-import recordView from './RecordView.vue'
+import typeAdd from './TypeAdd.vue'
+import typeEdit from './TypeEdit.vue'
+import typeView from './TypeView.vue'
 import moment from 'moment'
 moment.locale('zh-cn')
 
 export default {
-  name: 'record',
-  components: {RangeDate, recordAdd, recordEdit, recordView},
+  name: 'type',
+  components: {RangeDate, typeAdd, typeEdit, typeView},
   data () {
     return {
       advanced: false,
-      recordAdd: {
+      typeAdd: {
         visiable: false
       },
-      recordEdit: {
+      typeEdit: {
         visiable: false
       },
-      recordView: {
+      typeView: {
         visiable: false,
         data: null
       },
@@ -130,40 +119,23 @@ export default {
         showSizeChanger: true,
         showTotal: (total, range) => `显示 ${range[0]} ~ ${range[1]} 条记录，共 ${total} 条记录`
       },
-      recordList: []
+      typeList: []
     }
   },
   computed: {
     ...mapState({
-      currentrecord: state => state.account.record
+      currenttype: state => state.account.type
     }),
     columns () {
       return [{
-        title: '商品名称',
-        dataIndex: 'name'
-      }, {
-        title: '商品型号',
-        dataIndex: 'model',
-        customRender: (text, row, index) => {
-          if (text !== null) {
-            return text
-          } else {
-            return '- -'
-          }
-        }
-      }, {
-        title: '单位',
-        dataIndex: 'unit',
-        customRender: (text, row, index) => {
-          if (text !== null) {
-            return text
-          } else {
-            return '- -'
-          }
-        }
+        title: '类型编号',
+        dataIndex: 'code'
       }, {
         title: '商品类型',
-        dataIndex: 'typeName',
+        dataIndex: 'name'
+      }, {
+        title: '备注',
+        dataIndex: 'remark',
         customRender: (text, row, index) => {
           if (text !== null) {
             return text
@@ -172,62 +144,7 @@ export default {
           }
         }
       }, {
-        title: '商品图片',
-        dataIndex: 'images',
-        customRender: (text, record, index) => {
-          if (!record.images) return <a-avatar shape="square" icon="user" />
-          return <a-popover>
-            <template slot="content">
-              <a-avatar shape="square" size={132} icon="user" src={ 'http://127.0.0.1:9527/imagesWeb/' + record.images.split(',')[0] } />
-            </template>
-            <a-avatar shape="square" icon="user" src={ 'http://127.0.0.1:9527/imagesWeb/' + record.images.split(',')[0] } />
-          </a-popover>
-        }
-      }, {
-        title: '类型',
-        dataIndex: 'type',
-        customRender: (text, row, index) => {
-          switch (text) {
-            case 1:
-              return <a-tag color="green">入库</a-tag>
-            case 2:
-              return <a-tag color="red">出库</a-tag>
-            default:
-              return '- -'
-          }
-        }
-      }, {
-        title: '操作数量',
-        dataIndex: 'num',
-        customRender: (text, row, index) => {
-          if (text !== null) {
-            return text
-          } else {
-            return '- -'
-          }
-        }
-      }, {
-        title: '单号',
-        dataIndex: 'orderNumber',
-        customRender: (text, row, index) => {
-          if (text !== null) {
-            return text
-          } else {
-            return '- -'
-          }
-        }
-      }, {
-        title: '总价格',
-        dataIndex: 'totalPrice',
-        customRender: (text, row, index) => {
-          if (text !== null) {
-            return text
-          } else {
-            return '- -'
-          }
-        }
-      }, {
-        title: '操作时间',
+        title: '创建时间',
         dataIndex: 'createDate',
         customRender: (text, row, index) => {
           if (text !== null) {
@@ -247,12 +164,12 @@ export default {
     this.fetch()
   },
   methods: {
-    handlerecordViewOpen (row) {
-      this.recordView.data = row
-      this.recordView.visiable = true
+    handletypeViewOpen (row) {
+      this.typeView.data = row
+      this.typeView.visiable = true
     },
-    handlerecordViewClose () {
-      this.recordView.visiable = false
+    handletypeViewClose () {
+      this.typeView.visiable = false
     },
     onSelectChange (selectedRowKeys) {
       this.selectedRowKeys = selectedRowKeys
@@ -261,25 +178,25 @@ export default {
       this.advanced = !this.advanced
     },
     add () {
-      this.recordAdd.visiable = true
+      this.typeAdd.visiable = true
     },
-    handlerecordAddClose () {
-      this.recordAdd.visiable = false
+    handletypeAddClose () {
+      this.typeAdd.visiable = false
     },
-    handlerecordAddSuccess () {
-      this.recordAdd.visiable = false
-      this.$message.success('新增库房出入库成功')
+    handletypeAddSuccess () {
+      this.typeAdd.visiable = false
+      this.$message.success('新增商品类型成功')
       this.search()
     },
     edit (record) {
-      this.$refs.recordEdit.setFormValues(record)
-      this.recordEdit.visiable = true
+      this.$refs.typeEdit.setFormValues(record)
+      this.typeEdit.visiable = true
     },
-    handlerecordEditClose () {
-      this.recordEdit.visiable = false
+    handletypeEditClose () {
+      this.typeEdit.visiable = false
     },
-    handlerecordEditSuccess () {
-      this.recordEdit.visiable = false
+    handletypeEditSuccess () {
+      this.typeEdit.visiable = false
       this.$message.success('修改产品成功')
       this.search()
     },
@@ -298,7 +215,7 @@ export default {
         centered: true,
         onOk () {
           let ids = that.selectedRowKeys.join(',')
-          that.$delete('/cos/record-info/' + ids).then(() => {
+          that.$delete('/cos/type-info/' + ids).then(() => {
             that.$message.success('删除成功')
             that.selectedRowKeys = []
             that.search()
@@ -368,10 +285,10 @@ export default {
         params.size = this.pagination.defaultPageSize
         params.current = this.pagination.defaultCurrent
       }
-      if (params.record === undefined) {
-        delete params.record
+      if (params.type === undefined) {
+        delete params.type
       }
-      this.$get('/cos/record-info/page/list', {
+      this.$get('/cos/type-info/page/list', {
         ...params
       }).then((r) => {
         let data = r.data.data

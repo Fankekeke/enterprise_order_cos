@@ -37,6 +37,9 @@
         <if test="logisticsInfo.contact != null and logisticsInfo.contact != ''">
             AND ai.contact LIKE CONCAT('%',#{logisticsInfo.contact},'%')
         </if>
+        <if test="logisticsInfo.userId != null and logisticsInfo.userId != ''">
+            AND ui.user_id = #{logisticsInfo.userId}
+        </if>
         order by li.create_date desc
 
     </select>

@@ -7,7 +7,7 @@
           <div :class="advanced ? null: 'fold'">
             <a-col :md="6" :sm="24">
               <a-form-item
-                label="商品名称"
+                label="商品类型"
                 :labelCol="{span: 5}"
                 :wrapperCol="{span: 18, offset: 1}">
                 <a-input v-model="queryParams.name"/>
@@ -15,26 +15,15 @@
             </a-col>
             <a-col :md="6" :sm="24">
               <a-form-item
-                label="商品型号"
+                label="类型编号"
                 :labelCol="{span: 5}"
                 :wrapperCol="{span: 18, offset: 1}">
-                <a-input v-model="queryParams.model"/>
-              </a-form-item>
-            </a-col>
-            <a-col :md="6" :sm="24">
-              <a-form-item
-                label="处理状态"
-                :labelCol="{span: 5}"
-                :wrapperCol="{span: 18, offset: 1}">
-                <a-select v-model="queryParams.status">
-                  <a-select-option value="1">入库</a-select-option>
-                  <a-select-option value="2">出库</a-select-option>
-                </a-select>
+                <a-input v-model="queryParams.code"/>
               </a-form-item>
             </a-col>
           </div>
           <span style="float: right; margin-top: 3px;">
-            <a-button record="primary" @click="search">查询</a-button>
+            <a-button type="primary" @click="search">查询</a-button>
             <a-button style="margin-left: 8px" @click="reset">重置</a-button>
           </span>
         </a-row>
@@ -42,7 +31,7 @@
     </div>
     <div>
       <div class="operator">
-        <a-button record="primary" ghost @click="add">新增</a-button>
+        <a-button type="primary" ghost @click="add">新增</a-button>
       </div>
       <!-- 表格区域 -->
       <a-table ref="TableInfo"
@@ -65,53 +54,53 @@
           </template>
         </template>
         <template slot="operation" slot-scope="text, record">
-          <a-icon record="cloud" @click="handlerecordViewOpen(record)" title="详 情" style="margin-right: 10px"></a-icon>
-          <a-icon record="setting" theme="twoTone" twoToneColor="#4a9ff5" @click="edit(record)" title="修 改" style="margin-right: 10px"></a-icon>
+          <a-icon type="cloud" @click="handleconfigurationViewOpen(record)" title="详 情" style="margin-right: 10px"></a-icon>
+          <a-icon type="setting" theme="twoTone" twoToneColor="#4a9ff5" @click="edit(record)" title="修 改" style="margin-right: 10px"></a-icon>
         </template>
       </a-table>
     </div>
-    <record-add
-      v-if="recordAdd.visiable"
-      @close="handlerecordAddClose"
-      @success="handlerecordAddSuccess"
-      :recordAddVisiable="recordAdd.visiable">
-    </record-add>
-    <record-edit
-      ref="recordEdit"
-      @close="handlerecordEditClose"
-      @success="handlerecordEditSuccess"
-      :recordEditVisiable="recordEdit.visiable">
-    </record-edit>
-    <record-view
-      @close="handlerecordViewClose"
-      :recordShow="recordView.visiable"
-      :recordData="recordView.data">
-    </record-view>
+    <configuration-add
+      v-if="configurationAdd.visiable"
+      @close="handleconfigurationAddClose"
+      @success="handleconfigurationAddSuccess"
+      :configurationAddVisiable="configurationAdd.visiable">
+    </configuration-add>
+    <configuration-edit
+      ref="configurationEdit"
+      @close="handleconfigurationEditClose"
+      @success="handleconfigurationEditSuccess"
+      :configurationEditVisiable="configurationEdit.visiable">
+    </configuration-edit>
+    <configuration-view
+      @close="handleconfigurationViewClose"
+      :configurationShow="configurationView.visiable"
+      :configurationData="configurationView.data">
+    </configuration-view>
   </a-card>
 </template>
 
 <script>
 import RangeDate from '@/components/datetime/RangeDate'
 import {mapState} from 'vuex'
-import recordAdd from './RecordAdd.vue'
-import recordEdit from './RecordEdit.vue'
-import recordView from './RecordView.vue'
+import configurationAdd from './ConfigurationAdd.vue'
+import configurationEdit from './ConfigurationEdit.vue'
+import configurationView from './ConfigurationView.vue'
 import moment from 'moment'
 moment.locale('zh-cn')
 
 export default {
-  name: 'record',
-  components: {RangeDate, recordAdd, recordEdit, recordView},
+  name: 'configuration',
+  components: {RangeDate, configurationAdd, configurationEdit, configurationView},
   data () {
     return {
       advanced: false,
-      recordAdd: {
+      configurationAdd: {
         visiable: false
       },
-      recordEdit: {
+      configurationEdit: {
         visiable: false
       },
-      recordView: {
+      configurationView: {
         visiable: false,
         data: null
       },
@@ -130,40 +119,26 @@ export default {
         showSizeChanger: true,
         showTotal: (total, range) => `显示 ${range[0]} ~ ${range[1]} 条记录，共 ${total} 条记录`
       },
-      recordList: []
+      configurationList: []
     }
   },
   computed: {
     ...mapState({
-      currentrecord: state => state.account.record
+      currentconfiguration: state => state.account.configuration
     }),
     columns () {
       return [{
-        title: '商品名称',
-        dataIndex: 'name'
-      }, {
-        title: '商品型号',
-        dataIndex: 'model',
-        customRender: (text, row, index) => {
-          if (text !== null) {
-            return text
-          } else {
-            return '- -'
-          }
-        }
-      }, {
-        title: '单位',
-        dataIndex: 'unit',
-        customRender: (text, row, index) => {
-          if (text !== null) {
-            return text
-          } else {
-            return '- -'
-          }
-        }
+        title: '类型编号',
+        dataIndex: 'code'
       }, {
         title: '商品类型',
-        dataIndex: 'typeName',
+        dataIndex: 'name'
+      }, {
+        title: '预警数量',
+        dataIndex: 'alertNum'
+      }, {
+        title: '备注',
+        dataIndex: 'remark',
         customRender: (text, row, index) => {
           if (text !== null) {
             return text
@@ -172,62 +147,7 @@ export default {
           }
         }
       }, {
-        title: '商品图片',
-        dataIndex: 'images',
-        customRender: (text, record, index) => {
-          if (!record.images) return <a-avatar shape="square" icon="user" />
-          return <a-popover>
-            <template slot="content">
-              <a-avatar shape="square" size={132} icon="user" src={ 'http://127.0.0.1:9527/imagesWeb/' + record.images.split(',')[0] } />
-            </template>
-            <a-avatar shape="square" icon="user" src={ 'http://127.0.0.1:9527/imagesWeb/' + record.images.split(',')[0] } />
-          </a-popover>
-        }
-      }, {
-        title: '类型',
-        dataIndex: 'type',
-        customRender: (text, row, index) => {
-          switch (text) {
-            case 1:
-              return <a-tag color="green">入库</a-tag>
-            case 2:
-              return <a-tag color="red">出库</a-tag>
-            default:
-              return '- -'
-          }
-        }
-      }, {
-        title: '操作数量',
-        dataIndex: 'num',
-        customRender: (text, row, index) => {
-          if (text !== null) {
-            return text
-          } else {
-            return '- -'
-          }
-        }
-      }, {
-        title: '单号',
-        dataIndex: 'orderNumber',
-        customRender: (text, row, index) => {
-          if (text !== null) {
-            return text
-          } else {
-            return '- -'
-          }
-        }
-      }, {
-        title: '总价格',
-        dataIndex: 'totalPrice',
-        customRender: (text, row, index) => {
-          if (text !== null) {
-            return text
-          } else {
-            return '- -'
-          }
-        }
-      }, {
-        title: '操作时间',
+        title: '创建时间',
         dataIndex: 'createDate',
         customRender: (text, row, index) => {
           if (text !== null) {
@@ -247,12 +167,18 @@ export default {
     this.fetch()
   },
   methods: {
-    handlerecordViewOpen (row) {
-      this.recordView.data = row
-      this.recordView.visiable = true
+    handleconfigurationViewOpen (row) {
+      this.configurationView.data = row
+      this.configurationView.visiable = true
     },
-    handlerecordViewClose () {
-      this.recordView.visiable = false
+    handleconfigurationViewClose () {
+      this.configurationView.visiable = false
+    },
+    editStatus (row, status) {
+      this.$post('/cos/configuration-info/account/status', { staffId: row.id, status }).then((r) => {
+        this.$message.success('修改成功')
+        this.fetch()
+      })
     },
     onSelectChange (selectedRowKeys) {
       this.selectedRowKeys = selectedRowKeys
@@ -261,25 +187,25 @@ export default {
       this.advanced = !this.advanced
     },
     add () {
-      this.recordAdd.visiable = true
+      this.configurationAdd.visiable = true
     },
-    handlerecordAddClose () {
-      this.recordAdd.visiable = false
+    handleconfigurationAddClose () {
+      this.configurationAdd.visiable = false
     },
-    handlerecordAddSuccess () {
-      this.recordAdd.visiable = false
-      this.$message.success('新增库房出入库成功')
+    handleconfigurationAddSuccess () {
+      this.configurationAdd.visiable = false
+      this.$message.success('新增预警配置成功')
       this.search()
     },
     edit (record) {
-      this.$refs.recordEdit.setFormValues(record)
-      this.recordEdit.visiable = true
+      this.$refs.configurationEdit.setFormValues(record)
+      this.configurationEdit.visiable = true
     },
-    handlerecordEditClose () {
-      this.recordEdit.visiable = false
+    handleconfigurationEditClose () {
+      this.configurationEdit.visiable = false
     },
-    handlerecordEditSuccess () {
-      this.recordEdit.visiable = false
+    handleconfigurationEditSuccess () {
+      this.configurationEdit.visiable = false
       this.$message.success('修改产品成功')
       this.search()
     },
@@ -298,7 +224,7 @@ export default {
         centered: true,
         onOk () {
           let ids = that.selectedRowKeys.join(',')
-          that.$delete('/cos/record-info/' + ids).then(() => {
+          that.$delete('/cos/configuration-info/' + ids).then(() => {
             that.$message.success('删除成功')
             that.selectedRowKeys = []
             that.search()
@@ -368,10 +294,10 @@ export default {
         params.size = this.pagination.defaultPageSize
         params.current = this.pagination.defaultCurrent
       }
-      if (params.record === undefined) {
-        delete params.record
+      if (params.type === undefined) {
+        delete params.type
       }
-      this.$get('/cos/record-info/page/list', {
+      this.$get('/cos/configuration-info/page/list', {
         ...params
       }).then((r) => {
         let data = r.data.data

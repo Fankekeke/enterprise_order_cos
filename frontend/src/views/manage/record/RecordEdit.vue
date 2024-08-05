@@ -1,11 +1,11 @@
 <template>
-  <a-modal v-model="show" title="新增库房出入库" @cancel="onClose" :width="800">
+  <a-modal v-model="show" title="修改库房出入库" @cancel="onClose" :width="800">
     <template slot="footer">
       <a-button key="back" @click="onClose">
         取消
       </a-button>
       <a-button key="submit" record="primary" :loading="loading" @click="handleSubmit">
-        提交
+        修改
       </a-button>
     </template>
     <a-form :form="form" layout="vertical">
@@ -145,7 +145,8 @@
 
 <script>
 import {mapState} from 'vuex'
-import moment from "moment";
+import moment from 'moment'
+moment.locale('zh-cn')
 function getBase64 (file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
@@ -159,9 +160,9 @@ const formItemLayout = {
   wrapperCol: { span: 24 }
 }
 export default {
-  name: 'recordAdd',
+  name: 'recordEdit',
   props: {
-    recordAddVisiable: {
+    recordEditVisiable: {
       default: false
     }
   },
@@ -171,7 +172,7 @@ export default {
     }),
     show: {
       get: function () {
-        return this.recordAddVisiable
+        return this.recordEditVisiable
       },
       set: function () {
       }
@@ -179,6 +180,7 @@ export default {
   },
   data () {
     return {
+      rowId: null,
       formItemLayout,
       form: this.$form.createForm(this),
       loading: false,
@@ -201,6 +203,36 @@ export default {
     picHandleChange ({ fileList }) {
       this.fileList = fileList
     },
+    imagesInit (images) {
+      if (images !== null && images !== '') {
+        let imageList = []
+        images.split(',').forEach((image, index) => {
+          imageList.push({uid: index, name: image, status: 'done', url: 'http://127.0.0.1:9527/imagesWeb/' + image})
+        })
+        this.fileList = imageList
+      }
+    },
+    setFormValues ({...record}) {
+      this.rowId = record.id
+      let fields = ['name', 'mail', 'phone', 'province', 'city', 'area', 'address', 'sex', 'birthday', 'height', 'weight', 'idCard']
+      let obj = {}
+      Object.keys(record).forEach((key) => {
+        if (key === 'images') {
+          this.fileList = []
+          this.imagesInit(record['images'])
+        }
+        if (key === 'birthday') {
+          if (key === 'birthday' && record[key] != null) {
+            record[key] = moment(record[key])
+          }
+        }
+        if (fields.indexOf(key) !== -1) {
+          this.form.getFieldDecorator(key)
+          obj[key] = record[key]
+        }
+      })
+      this.form.setFieldsValue(obj)
+    },
     reset () {
       this.loading = false
       this.form.resetFields()
@@ -213,14 +245,19 @@ export default {
       // 获取图片List
       let images = []
       this.fileList.forEach(image => {
-        images.push(image.response)
+        if (image.response !== undefined) {
+          images.push(image.response)
+        } else {
+          images.push(image.name)
+        }
       })
       this.form.validateFields((err, values) => {
+        values.id = this.rowId
         values.images = images.length > 0 ? images.join(',') : null
         values.birthday = moment(values.birthday).format('YYYY-MM-DD')
         if (!err) {
           this.loading = true
-          this.$post('/cos/record-info', {
+          this.$put('/cos/record-info', {
             ...values
           }).then((r) => {
             this.reset()

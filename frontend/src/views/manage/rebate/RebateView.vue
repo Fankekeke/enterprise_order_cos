@@ -1,42 +1,42 @@
 <template>
-  <a-modal v-model="show" title="库房出入库详情" @cancel="onClose" :width="1200">
+  <a-modal v-model="show" title="商品折扣设置详情" @cancel="onClose" :width="1200">
     <template slot="footer">
-      <a-button key="back" @click="onClose" record="danger">
+      <a-button key="back" @click="onClose" rebate="danger">
         关闭
       </a-button>
     </template>
-    <div style="font-size: 13px;font-family: SimHei" v-if="recordData !== null">
+    <div style="font-size: 13px;font-family: SimHei" v-if="rebateData !== null">
       <a-row style="padding-left: 24px;padding-right: 24px;">
-        <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">库房出入库信息</span></a-col>
-        <a-col :span="8"><b>库房出入库名称：</b>
-          {{ recordData.name }}
+        <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">商品折扣设置信息</span></a-col>
+        <a-col :span="8"><b>商品折扣设置名称：</b>
+          {{ rebateData.name }}
         </a-col>
-        <a-col :span="8"><b>库房出入库编号：</b>
-          {{ recordData.code }}
+        <a-col :span="8"><b>商品折扣设置编号：</b>
+          {{ rebateData.code }}
         </a-col>
         <a-col :span="8"><b>联系方式：</b>
-          {{ recordData.phone }}
+          {{ rebateData.phone }}
         </a-col>
       </a-row>
       <br/>
       <a-row style="padding-left: 24px;padding-right: 24px;">
         <a-col :span="8"><b>省份：</b>
-          {{ recordData.province }}
+          {{ rebateData.province }}
         </a-col>
         <a-col :span="8"><b>城市：</b>
-          {{ recordData.city }}
+          {{ rebateData.city }}
         </a-col>
         <a-col :span="8"><b>区：</b>
-          {{ recordData.area }}
+          {{ rebateData.area }}
         </a-col>
       </a-row>
       <br/>
       <a-row style="padding-left: 24px;padding-right: 24px;">
         <a-col :span="16"><b>收货地址：</b>
-          {{ recordData.address }}
+          {{ rebateData.address }}
         </a-col>
         <a-col :span="8"><b>注册时间：</b>
-          {{ recordData.createDate }}
+          {{ rebateData.createDate }}
         </a-col>
       </a-row>
       <br/>
@@ -73,20 +73,20 @@ function getBase64 (file) {
   })
 }
 export default {
-  name: 'recordView',
+  name: 'rebateView',
   props: {
-    recordShow: {
-      record: Boolean,
+    rebateShow: {
+      rebate: Boolean,
       default: false
     },
-    recordData: {
-      record: Object
+    rebateData: {
+      rebate: Object
     }
   },
   computed: {
     show: {
       get: function () {
-        return this.recordShow
+        return this.rebateShow
       },
       set: function () {
       }
@@ -155,10 +155,10 @@ export default {
     }
   },
   watch: {
-    recordShow: function (value) {
+    rebateShow: function (value) {
       if (value) {
         // 药品信息
-        this.$get(`/cos/medication-info/list/byrecord/${this.recordData.id}`).then((r) => {
+        this.$get(`/cos/medication-info/list/byrebate/${this.rebateData.id}`).then((r) => {
           this.durgList = r.data.data
         })
       }
