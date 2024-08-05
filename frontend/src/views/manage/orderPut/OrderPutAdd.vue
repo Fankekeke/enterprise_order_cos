@@ -145,7 +145,7 @@
 
 <script>
 import {mapState} from 'vuex'
-import moment from "moment";
+import moment from 'moment'
 function getBase64 (file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()

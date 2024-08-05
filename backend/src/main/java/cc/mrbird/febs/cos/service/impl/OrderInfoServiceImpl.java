@@ -38,6 +38,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
     private final ICommodityInfoService commodityInfoService;
 
+    private final ICommodityTypeService commodityTypeService;
+
     private final ILogisticsInfoService logisticsInfoService;
 
     private final IUserInfoService userInfoService;
@@ -311,10 +313,17 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
                 saleTypeRankMap.merge(commodity.getTypeId(), value.size(), Integer::sum);
             }
         });
-
+        result.put("saleRank", saleRank);
+        result.put("salePriceRank", salePriceRank);
         // 销售商品分类
-
-        return null;
+        LinkedHashMap<String, Integer> saleTypeRankMapCopy = new LinkedHashMap<>();
+        List<CommodityType> commodityTypeList = commodityTypeService.list();
+        Map<Integer, String> commodityTypeMap = commodityTypeList.stream().collect(Collectors.toMap(CommodityType::getId, CommodityType::getName));
+        commodityTypeMap.forEach((key, value) -> {
+            saleTypeRankMapCopy.put(value, saleTypeRankMap.get(key) == null ? 0 : saleTypeRankMap.get(key));
+        });
+        result.put("saleTypeRankMapCopy", saleTypeRankMapCopy);
+        return result;
     }
 
     /**

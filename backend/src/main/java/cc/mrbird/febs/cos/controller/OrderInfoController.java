@@ -178,7 +178,7 @@ public class OrderInfoController {
      */
     @GetMapping("/statistics/year")
     public R selectStoreStatisticsByYear(String date) {
-        return R.ok();
+        return R.ok(orderInfoService.selectStoreStatisticsByYear(date));
     }
 
     /**

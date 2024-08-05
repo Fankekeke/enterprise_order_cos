@@ -1,8 +1,45 @@
 <template>
   <div :class="[multipage === true ? 'multi-page':'single-page', 'not-menu-page', 'home-page']">
-    <a-row :gutter="8" class="count-info">
+    <a-row :gutter="8" class="head-info" v-if="user.roleId == 74">
+      <a-card class="head-info-card">
+        <a-col :span="12">
+          <div class="head-info-count">
+            <div class="head-info-welcome">
+              {{welcomeMessage}}
+            </div>
+            <div class="head-info-desc">
+              <p>{{user.roleName ? user.roleName : '暂无角色'}}</p>
+            </div>
+            <div class="head-info-time">上次登录时间：{{user.lastLoginTime ? user.lastLoginTime : '第一次访问系统'}}</div>
+          </div>
+        </a-col>
+        <a-col :span="12">
+          <div>
+            <a-row class="more-info" v-if="user.roleId == 74">
+              <a-col :span="4"></a-col>
+              <a-col :span="4"></a-col>
+              <a-col :span="4">
+                <head-info title="车辆数量" :content="titleData.staffNum" :center="false" :bordered="false"/>
+              </a-col>
+              <a-col :span="4">
+                <head-info title="总收益" :content="titleData.totalRevenue" :center="false" :bordered="false"/>
+              </a-col>
+              <a-col :span="4">
+                <head-info title="客户数量" :content="titleData.totalOrderNum" :center="false" :bordered="false"/>
+              </a-col>
+              <a-col :span="4">
+                <head-info title="车位数量" :content="titleData.roomNum" :center="false"/>
+              </a-col>
+            </a-row>
+          </div>
+        </a-col>
+      </a-card>
+    </a-row>
+    <home v-if="user.roleId == 74 || user.roleId == 76" @setTitle="setTitleData"></home>
+    <work v-if="user.roleId == 75"></work>
+    <a-row :gutter="8" class="count-info" style="margin-top: 15px" v-show="user.roleId == 74">
       <a-col :span="12" class="visit-count-wrapper">
-        <a-card class="visit-count">
+        <a-card class="visit-count" hoverable>
           <apexchart ref="count" type=bar height=300 :options="chartOptions" :series="series" />
         </a-card>
       </a-col>
@@ -13,13 +50,21 @@
 import HeadInfo from '@/views/common/HeadInfo'
 import {mapState} from 'vuex'
 import moment from 'moment'
+import Home from './manage/component/home/Home'
+import Work from './manage/component/work/Work'
 moment.locale('zh-cn')
 
 export default {
   name: 'HomePage',
-  components: {HeadInfo},
+  components: {Home, Work, HeadInfo},
   data () {
     return {
+      titleData: {
+        staffNum: 0,
+        totalRevenue: 0,
+        totalOrderNum: 0,
+        roomNum: 0
+      },
       series: [],
       chartOptions: {
         chart: {
@@ -55,7 +100,8 @@ export default {
       userRole: '',
       userDept: '',
       lastLoginTime: '',
-      welcomeMessage: ''
+      welcomeMessage: '',
+      bulletinList: []
     }
   },
   computed: {
@@ -73,6 +119,9 @@ export default {
       const hour = date.getHours()
       let time = hour < 6 ? '早上好' : (hour <= 11 ? '上午好' : (hour <= 13 ? '中午好' : (hour <= 18 ? '下午好' : '晚上好')))
       return `${time}，${this.user.username}`
+    },
+    setTitleData (titleData) {
+      this.titleData = titleData
     }
   },
   mounted () {
@@ -139,105 +188,105 @@ export default {
 }
 </script>
 <style lang="less">
-  .home-page {
-    .head-info {
-      margin-bottom: .5rem;
-      .head-info-card {
-        padding: .5rem;
-        border-color: #f1f1f1;
-        .head-info-avatar {
-          display: inline-block;
-          float: left;
-          margin-right: 1rem;
-          img {
-            width: 5rem;
-            border-radius: 2px;
+.home-page {
+  .head-info {
+    margin-bottom: .5rem;
+    .head-info-card {
+      padding: .5rem;
+      border-color: #f1f1f1;
+      .head-info-avatar {
+        display: inline-block;
+        float: left;
+        margin-right: 1rem;
+        img {
+          width: 5rem;
+          border-radius: 2px;
+        }
+      }
+      .head-info-count {
+        display: inline-block;
+        float: left;
+        .head-info-welcome {
+          font-size: 1.05rem;
+          margin-bottom: .1rem;
+        }
+        .head-info-desc {
+          color: rgba(0, 0, 0, 0.45);
+          font-size: .8rem;
+          padding: .2rem 0;
+          p {
+            margin-bottom: 0;
           }
         }
-        .head-info-count {
-          display: inline-block;
-          float: left;
-          .head-info-welcome {
-            font-size: 1.05rem;
-            margin-bottom: .1rem;
-          }
-          .head-info-desc {
-            color: rgba(0, 0, 0, 0.45);
-            font-size: .8rem;
-            padding: .2rem 0;
-            p {
-              margin-bottom: 0;
-            }
-          }
-          .head-info-time {
-            color: rgba(0, 0, 0, 0.45);
-            font-size: .8rem;
-            padding: .2rem 0;
-          }
+        .head-info-time {
+          color: rgba(0, 0, 0, 0.45);
+          font-size: .8rem;
+          padding: .2rem 0;
         }
       }
     }
-    .count-info {
-      .visit-count-wrapper {
-        padding-left: 0 !important;
-        .visit-count {
-          padding: .5rem;
-          border-color: #f1f1f1;
-          .ant-card-body {
-            padding: .5rem 1rem !important;
-          }
+  }
+  .count-info {
+    .visit-count-wrapper {
+      padding-left: 0 !important;
+      .visit-count {
+        padding: .5rem;
+        border-color: #f1f1f1;
+        .ant-card-body {
+          padding: .5rem 1rem !important;
         }
       }
-      .project-wrapper {
-        padding-right: 0 !important;
-        .project-card {
-          border: none !important;
-          .ant-card-head {
-            border-left: 1px solid #f1f1f1 !important;
-            border-top: 1px solid #f1f1f1 !important;
-            border-right: 1px solid #f1f1f1 !important;
-          }
-          .ant-card-body {
-            padding: 0 !important;
-            table {
-              width: 100%;
-              td {
-                width: 50%;
-                border: 1px solid #f1f1f1;
-                padding: .6rem;
-                .project-avatar-wrapper {
-                  display:inline-block;
-                  float:left;
-                  margin-right:.7rem;
-                  .project-avatar {
-                    color: #42b983;
-                    background-color: #d6f8b8;
-                  }
+    }
+    .project-wrapper {
+      padding-right: 0 !important;
+      .project-card {
+        border: none !important;
+        .ant-card-head {
+          border-left: 1px solid #f1f1f1 !important;
+          border-top: 1px solid #f1f1f1 !important;
+          border-right: 1px solid #f1f1f1 !important;
+        }
+        .ant-card-body {
+          padding: 0 !important;
+          table {
+            width: 100%;
+            td {
+              width: 50%;
+              border: 1px solid #f1f1f1;
+              padding: .6rem;
+              .project-avatar-wrapper {
+                display:inline-block;
+                float:left;
+                margin-right:.7rem;
+                .project-avatar {
+                  color: #42b983;
+                  background-color: #d6f8b8;
                 }
               }
             }
           }
-          .project-detail {
-            display:inline-block;
-            float:left;
-            text-align:left;
-            width: 78%;
-            .project-name {
-              font-size:.9rem;
-              margin-top:-2px;
-              font-weight:600;
-            }
-            .project-desc {
-              color:rgba(0, 0, 0, 0.45);
-              p {
-                margin-bottom:0;
-                font-size:.6rem;
-                white-space:normal;
-              }
+        }
+        .project-detail {
+          display:inline-block;
+          float:left;
+          text-align:left;
+          width: 78%;
+          .project-name {
+            font-size:.9rem;
+            margin-top:-2px;
+            font-weight:600;
+          }
+          .project-desc {
+            color:rgba(0, 0, 0, 0.45);
+            p {
+              margin-bottom:0;
+              font-size:.6rem;
+              white-space:normal;
             }
           }
         }
       }
     }
   }
+}
 </style>
