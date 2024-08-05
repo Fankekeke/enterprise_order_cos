@@ -1,8 +1,10 @@
 package cc.mrbird.febs.cos.service.impl;
 
+import cc.mrbird.febs.cos.entity.CommodityInfo;
 import cc.mrbird.febs.cos.entity.OrderOutInfo;
 import cc.mrbird.febs.cos.dao.OrderOutInfoMapper;
 import cc.mrbird.febs.cos.entity.StoreRecordInfo;
+import cc.mrbird.febs.cos.service.ICommodityInfoService;
 import cc.mrbird.febs.cos.service.IOrderOutInfoService;
 import cc.mrbird.febs.cos.service.IStoreRecordInfoService;
 import cn.hutool.core.date.DateUtil;
@@ -33,6 +35,8 @@ public class OrderOutInfoServiceImpl extends ServiceImpl<OrderOutInfoMapper, Ord
 
     private final IStoreRecordInfoService storeRecordInfoService;
 
+    private final ICommodityInfoService commodityInfoService;
+
     /**
      * 分页获取库房出库信息
      *
@@ -43,6 +47,49 @@ public class OrderOutInfoServiceImpl extends ServiceImpl<OrderOutInfoMapper, Ord
     @Override
     public IPage<LinkedHashMap<String, Object>> selectOrderOutPage(Page<OrderOutInfo> page, OrderOutInfo orderOutInfo) {
         return baseMapper.selectOrderOutPage(page, orderOutInfo);
+    }
+
+    /**
+     * 查询库房出库信息详情
+     *
+     * @param outId 主键ID
+     * @return 结果
+     */
+    @Override
+    public LinkedHashMap<String, Object> selectOrderOutDetail(Integer outId) {
+        // 返回数据
+        LinkedHashMap<String, Object> result = new LinkedHashMap<String, Object>() {
+            {
+                put("out", null);
+                put("record", Collections.emptyList());
+            }
+        };
+
+        // 出库信息
+        OrderOutInfo outInfo = this.getById(outId);
+        if (outInfo == null) {
+            return result;
+        }
+        result.put("out", outInfo);
+
+        // 出库详情
+        List<StoreRecordInfo> recordInfoList = storeRecordInfoService.list(Wrappers.<StoreRecordInfo>lambdaQuery().eq(StoreRecordInfo::getOrderNumber, outInfo.getCode()));
+        List<String> codeList = recordInfoList.stream().map(StoreRecordInfo::getCommodityCode).collect(Collectors.toList());
+        // 获取商品信息
+        List<CommodityInfo> commodityInfoList = commodityInfoService.list(Wrappers.<CommodityInfo>lambdaQuery().in(CommodityInfo::getCode, codeList));
+        Map<String, CommodityInfo> commodityMap = commodityInfoList.stream().collect(Collectors.toMap(CommodityInfo::getCode, e -> e));
+
+        for (StoreRecordInfo storeRecordInfo : recordInfoList) {
+            CommodityInfo commodityInfo = commodityMap.get(storeRecordInfo.getCommodityCode());
+            if (commodityInfo == null) {
+                continue;
+            }
+            storeRecordInfo.setName(commodityInfo.getName());
+            storeRecordInfo.setModel(commodityInfo.getModel());
+            storeRecordInfo.setImages(commodityInfo.getImages());
+        }
+        result.put("record", recordInfoList);
+        return result;
     }
 
     /**

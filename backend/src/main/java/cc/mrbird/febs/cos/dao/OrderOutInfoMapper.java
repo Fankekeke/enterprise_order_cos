@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  * 库房出库 mapper层
@@ -23,4 +24,13 @@ public interface OrderOutInfoMapper extends BaseMapper<OrderOutInfo> {
      * @return 结果
      */
     IPage<LinkedHashMap<String, Object>> selectOrderOutPage(Page<OrderOutInfo> page, @Param("orderOutInfo") OrderOutInfo orderOutInfo);
+
+    /**
+     * 根据时间获取出库信息
+     *
+     * @param year  年份
+     * @param month 月份
+     * @return 结果
+     */
+    List<OrderOutInfo> selectOrderOutListByDate(@Param("year") Integer year, @Param("month") Integer month);
 }

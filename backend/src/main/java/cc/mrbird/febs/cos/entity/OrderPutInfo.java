@@ -64,4 +64,16 @@ public class OrderPutInfo implements Serializable {
      */
     @TableField(exist = false)
     private String storeRecord;
+
+    /**
+     * 年份
+     */
+    @TableField(exist = false)
+    private Integer year;
+
+    /**
+     * 月份
+     */
+    @TableField(exist = false)
+    private Integer month;
 }

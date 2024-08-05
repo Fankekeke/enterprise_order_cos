@@ -26,6 +26,14 @@ public interface IOrderPutInfoService extends IService<OrderPutInfo> {
     IPage<LinkedHashMap<String, Object>> selectOrderPutPage(Page<OrderPutInfo> page, OrderPutInfo orderPutInfo);
 
     /**
+     * 查询库房入库信息详情
+     *
+     * @param putId 主键ID
+     * @return 结果
+     */
+    LinkedHashMap<String, Object> selectOrderPutDetail(Integer putId);
+
+    /**
      * 添加库房入库
      *
      * @param orderPutInfo 入库信息

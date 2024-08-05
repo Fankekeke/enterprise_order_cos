@@ -45,7 +45,7 @@ public class OrderOutInfoController {
      */
     @GetMapping("/{id}")
     public R detail(@PathVariable("id") Integer id) {
-        return R.ok(orderOutInfoService.getById(id));
+        return R.ok(orderOutInfoService.selectOrderOutDetail(id));
     }
 
     /**

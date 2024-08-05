@@ -56,7 +56,7 @@ public class OrderPutInfoController {
      */
     @GetMapping("/{id}")
     public R detail(@PathVariable("id") Integer id) {
-        return R.ok(orderPutInfoService.getById(id));
+        return R.ok(orderPutInfoService.selectOrderPutDetail(id));
     }
 
     /**

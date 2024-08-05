@@ -87,4 +87,10 @@ public class StoreRecordInfo implements Serializable {
      */
     @TableField(exist = false)
     private String typeName;
+
+    /**
+     * 商品图片
+     */
+    @TableField(exist = false)
+    private String images;
 }

@@ -41,4 +41,33 @@
         order by
         ooi.create_date desc
     </select>
+
+    <!-- 根据时间获取出库信息 -->
+    <select id="selectOrderOutListByDate" resultType="cc.mrbird.febs.cos.entity.OrderOutInfo">
+        select
+        ooi.id,
+        ooi.code,
+        ooi.name,
+        ooi.put_user,
+        ooi.total_price,
+        ooi.remark,
+        ooi.user_id,
+        ooi.address_id,
+        ooi.create_date,
+        ooi.order_id,
+        DATE_FORMAT( ooi.create_date, '%Y' ) as `year`,
+        DATE_FORMAT( ooi.create_date, '%m' ) as `month`
+        from
+        order_out_info ooi
+        where
+        1 = 1
+        <if test="year != null and year != ''">
+            and DATE_FORMAT( ooi.create_date, '%Y' ) = #{year}
+        </if>
+        <if test="month != null and month != ''">
+            and DATE_FORMAT( ooi.create_date, '%m' ) = #{month}
+        </if>
+        order by
+        ooi.create_date desc
+    </select>
 </mapper>

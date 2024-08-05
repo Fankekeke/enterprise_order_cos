@@ -25,6 +25,14 @@ public interface IOrderOutInfoService extends IService<OrderOutInfo> {
     IPage<LinkedHashMap<String, Object>> selectOrderOutPage(Page<OrderOutInfo> page, OrderOutInfo orderOutInfo);
 
     /**
+     * 查询库房出库信息详情
+     *
+     * @param outId 主键ID
+     * @return 结果
+     */
+    LinkedHashMap<String, Object> selectOrderOutDetail(Integer outId);
+
+    /**
      * 添加库房出库
      *
      * @param orderOutInfo 出库信息

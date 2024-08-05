@@ -169,4 +169,26 @@ public class OrderInfoController {
     public R homeData() {
         return R.ok(orderInfoService.selectHomeData());
     }
+
+    /**
+     * 年统计订单及收益
+     *
+     * @param date 年份
+     * @return 结果
+     */
+    @GetMapping("/statistics/year")
+    public R selectStoreStatisticsByYear(String date) {
+        return R.ok();
+    }
+
+    /**
+     * 月统计订单及收益
+     *
+     * @param date 日期
+     * @return 结果
+     */
+    @GetMapping("/statistics/month")
+    public R selectStoreStatisticsByMonth(String date) {
+        return R.ok();
+    }
 }
