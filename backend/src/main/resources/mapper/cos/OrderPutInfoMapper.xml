@@ -39,7 +39,8 @@
         remark,
         create_date,
         DATE_FORMAT( create_date, '%Y' ) as `year`,
-        DATE_FORMAT( create_date, '%m' ) as `month`
+        DATE_FORMAT( create_date, '%m' ) as `month`,
+        DATE_FORMAT( create_date, '%d' ) as `day`
         from
         order_put_info
         where 1 = 1

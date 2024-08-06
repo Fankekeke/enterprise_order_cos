@@ -76,4 +76,10 @@ public class OrderPutInfo implements Serializable {
      */
     @TableField(exist = false)
     private Integer month;
+
+    /**
+     * 天
+     */
+    @TableField(exist = false)
+    private Integer day;
 }

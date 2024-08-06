@@ -334,6 +334,32 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
      */
     @Override
     public LinkedHashMap<String, Object> selectStoreStatisticsByMonth(String date) {
+        // 返回数据
+        LinkedHashMap<String, Object> result = new LinkedHashMap<>();
+
+        int year =  DateUtil.year(new Date());
+        int month =  DateUtil.month(new Date()) + 1;
+        if (StrUtil.isNotEmpty(date)) {
+            year = DateUtil.year(DateUtil.parseDate(date));
+            month = DateUtil.month(DateUtil.parseDate(date)) + 1;
+        }
+
+        List<OrderOutInfo> orderOutList = orderOutInfoMapper.selectOrderOutListByDate(year, month);
+        Map<Integer, List<OrderOutInfo>> orderOutDayMap = orderOutList.stream().collect(Collectors.groupingBy(OrderOutInfo::getDay));
+        List<OrderPutInfo> orderPutList = orderPutInfoMapper.selectOrderPutListByDate(year, month);
+        Map<Integer, List<OrderPutInfo>> orderPutDayMap = orderPutList.stream().collect(Collectors.groupingBy(OrderPutInfo::getDay));
+
+        // 本月订单量
+        result.put("orderNum", orderOutList.size());
+        // 本月总收益
+        BigDecimal totalPrice = orderOutList.stream().map(OrderOutInfo::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
+        result.put("totalPrice", totalPrice);
+        // 本月入库单量
+        result.put("putNum", orderPutList.size());
+        // 本月总支出
+        BigDecimal outlayPrice = orderPutList.stream().map(OrderPutInfo::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add);
+        result.put("outlayPrice", outlayPrice);
+
         return null;
     }
 }
