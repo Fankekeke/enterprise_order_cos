@@ -1,5 +1,5 @@
 <template>
-  <a-modal v-model="show" title="商品类型详情" @cancel="onClose" :width="1200">
+  <a-modal v-model="show" title="商品类型详情" @cancel="onClose" :width="800">
     <template slot="footer">
       <a-button key="back" @click="onClose" type="danger">
         关闭
@@ -11,52 +11,13 @@
         <a-col :span="8"><b>商品类型名称：</b>
           {{ typeData.name }}
         </a-col>
-        <a-col :span="8"><b>商品类型编号：</b>
-          {{ typeData.code }}
-        </a-col>
-        <a-col :span="8"><b>联系方式：</b>
-          {{ typeData.phone }}
-        </a-col>
-      </a-row>
-      <br/>
-      <a-row style="padding-left: 24px;padding-right: 24px;">
-        <a-col :span="8"><b>省份：</b>
-          {{ typeData.province }}
-        </a-col>
-        <a-col :span="8"><b>城市：</b>
-          {{ typeData.city }}
-        </a-col>
-        <a-col :span="8"><b>区：</b>
-          {{ typeData.area }}
+        <br/>
+        <br/>
+        <a-col :span="24"><b>备注：</b>
+          {{ typeData.remark ? typeData.remark : '- -' }}
         </a-col>
       </a-row>
       <br/>
-      <a-row style="padding-left: 24px;padding-right: 24px;">
-        <a-col :span="16"><b>收货地址：</b>
-          {{ typeData.address }}
-        </a-col>
-        <a-col :span="8"><b>注册时间：</b>
-          {{ typeData.createDate }}
-        </a-col>
-      </a-row>
-      <br/>
-      <a-row style="padding-left: 24px;padding-right: 24px;">
-        <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">电子处方</span></a-col>
-        <a-col :span="24">
-          <a-table :columns="columns" :data-source="durgList">
-            <template slot="contentShow" slot-scope="text, record">
-              <template>
-                <a-tooltip>
-                  <template slot="title">
-                    {{ record.cause }}
-                  </template>
-                  {{ record.cause.slice(0, 15) }} ...
-                </a-tooltip>
-              </template>
-            </template>
-          </a-table>
-        </a-col>
-      </a-row>
     </div>
   </a-modal>
 </template>
@@ -90,59 +51,6 @@ export default {
       },
       set: function () {
       }
-    },
-    columns () {
-      return [{
-        title: '处方单号',
-        dataIndex: 'code'
-      }, {
-        title: '病因',
-        dataIndex: 'cause',
-        scopedSlots: { customRender: 'contentShow' }
-      }, {
-        title: '出具人',
-        dataIndex: 'checkIssuer',
-        customRender: (text, row, index) => {
-          if (text !== null) {
-            return text
-          } else {
-            return '- -'
-          }
-        }
-      }, {
-        title: '出具机构',
-        dataIndex: 'checkAgency',
-        customRender: (text, row, index) => {
-          if (text !== null) {
-            return text
-          } else {
-            return '- -'
-          }
-        }
-      }, {
-        title: '发布时间',
-        dataIndex: 'createDate',
-        customRender: (text, row, index) => {
-          if (text !== null) {
-            return text
-          } else {
-            return '- -'
-          }
-        }
-      }, {
-        title: '状态',
-        dataIndex: 'status',
-        customRender: (text, row, index) => {
-          switch (text) {
-            case 0:
-              return <a-tag color='red'>未处理</a-tag>
-            case 1:
-              return <a-tag color='green'>已处理</a-tag>
-            default:
-              return '- -'
-          }
-        }
-      }]
     }
   },
   data () {
@@ -157,10 +65,6 @@ export default {
   watch: {
     typeShow: function (value) {
       if (value) {
-        // 药品信息
-        this.$get(`/cos/medication-info/list/bytype/${this.typeData.id}`).then((r) => {
-          this.durgList = r.data.data
-        })
       }
     }
   },

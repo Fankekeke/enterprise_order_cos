@@ -8,6 +8,7 @@
         id,
         code,
         name,
+        sex,
         `type`,
         contact,
         phone,
@@ -22,7 +23,7 @@
         from
         user_info
         where 1 = 1
-        <if test="storeRecordInfo.type != null and storeRecordInfo.type != ''">
+        <if test="userInfo.type != null and userInfo.type != ''">
             AND type = #{storeRecordInfo.type}
         </if>
         <if test="userInfo.name != null and userInfo.name != ''">
@@ -31,7 +32,7 @@
         <if test="userInfo.code != null and userInfo.code != ''">
             AND code LIKE CONCAT('%',#{userInfo.code},'%')
         </if>
-        order create_date desc
+        order by create_date desc
 
     </select>
 </mapper>

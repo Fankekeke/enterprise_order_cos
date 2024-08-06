@@ -40,6 +40,11 @@ public class UserInfo implements Serializable {
     private String name;
 
     /**
+     * 性别
+     */
+    private String sex;
+
+    /**
      * 类型（1.经销商 2.批发商 3.散客 4.代理商）
      */
     private String type;
@@ -60,7 +65,7 @@ public class UserInfo implements Serializable {
     private String email;
 
     /**
-     * 状态（0.未审核 1.审核中 2.已审核）
+     * 状态（0.未审核 1.审核驳回 2.已审核）
      */
     private String status;
 

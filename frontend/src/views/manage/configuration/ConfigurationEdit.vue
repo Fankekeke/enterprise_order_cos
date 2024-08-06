@@ -257,7 +257,7 @@ export default {
         values.birthday = moment(values.birthday).format('YYYY-MM-DD')
         if (!err) {
           this.loading = true
-          this.$put('/cos/configuration-info', {
+          this.$put('/cos/alert-configuration-info', {
             ...values
           }).then((r) => {
             this.reset()

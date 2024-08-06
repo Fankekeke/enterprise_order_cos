@@ -13,7 +13,7 @@
         <a-col :span="12">
           <a-form-item label='联系人' v-bind="formItemLayout">
             <a-input v-decorator="[
-            'contactPerson',
+            'contact',
             { rules: [{ required: true, message: '请输入联系人!' }] }
             ]"/>
           </a-form-item>
@@ -21,7 +21,7 @@
         <a-col :span="12">
           <a-form-item label='联系方式' v-bind="formItemLayout">
             <a-input v-decorator="[
-            'contactMethod',
+            'phone',
             { rules: [{ required: true, message: '请输入联系方式!' }] }
             ]"/>
           </a-form-item>
@@ -39,7 +39,7 @@
         </a-col>
         <a-col :span="12">
           <a-form-item label='经度' v-bind="formItemLayout">
-            <a-input v-decorator="[
+            <a-input disabled v-decorator="[
             'longitude',
             { rules: [{ required: true, message: '请输入经度!' }] }
             ]"/>
@@ -47,7 +47,7 @@
         </a-col>
         <a-col :span="12">
           <a-form-item label='纬度' v-bind="formItemLayout">
-            <a-input v-decorator="[
+            <a-input disabled v-decorator="[
             'latitude',
             { rules: [{ required: true, message: '请输入纬度!' }] }
             ]"/>
@@ -75,6 +75,20 @@
             'area',
             { rules: [{ required: true, message: '请输入区!' }] }
             ]"/>
+          </a-form-item>
+        </a-col>
+        <a-col :span="24">
+          <a-form-item label='默认地址' v-bind="formItemLayout">
+            <a-radio-group default-value="1" button-style="solid" v-decorator="[
+              'defaultFlag'
+              ]">
+              <a-radio-button value="0">
+                否
+              </a-radio-button>
+              <a-radio-button value="1">
+                是
+              </a-radio-button>
+            </a-radio-group>
           </a-form-item>
         </a-col>
       </a-row>
@@ -201,7 +215,7 @@ export default {
     },
     setFormValues ({...address}) {
       this.rowId = address.id
-      let fields = ['address', 'province', 'city', 'area', 'contactPerson', 'contactMethod', 'longitude', 'latitude']
+      let fields = ['address', 'province', 'city', 'area', 'contact', 'phone', 'defaultFlag', 'longitude', 'latitude']
       let obj = {}
       Object.keys(address).forEach((key) => {
         if (key === 'images') {

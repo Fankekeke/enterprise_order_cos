@@ -7,7 +7,7 @@
           <div :class="advanced ? null: 'fold'">
             <a-col :md="6" :sm="24">
               <a-form-item
-                label="用户姓名"
+                label="企业名称"
                 :labelCol="{span: 5}"
                 :wrapperCol="{span: 18, offset: 1}">
                 <a-input v-model="queryParams.name"/>
@@ -27,14 +27,6 @@
                 :labelCol="{span: 5}"
                 :wrapperCol="{span: 18, offset: 1}">
                 <a-input v-model="queryParams.phone"/>
-              </a-form-item>
-            </a-col>
-            <a-col :md="6" :sm="24">
-              <a-form-item
-                label="地址"
-                :labelCol="{span: 5}"
-                :wrapperCol="{span: 18, offset: 1}">
-                <a-input v-model="queryParams.address"/>
               </a-form-item>
             </a-col>
           </div>
@@ -149,17 +141,19 @@ export default {
         title: '用户编号',
         dataIndex: 'code'
       }, {
-        title: '用户姓名',
+        title: '企业名称',
         dataIndex: 'name'
       }, {
-        title: '性别',
-        dataIndex: 'sex',
+        title: '审核状态',
+        dataIndex: 'status',
         customRender: (text, row, index) => {
           switch (text) {
+            case '0':
+              return <a-tag>未审核</a-tag>
             case '1':
-              return <a-tag color="blue">男</a-tag>
+              return <a-tag color="red">审核驳回</a-tag>
             case '2':
-              return <a-tag color="pink">女</a-tag>
+              return <a-tag color="green">已审核</a-tag>
             default:
               return '- -'
           }
@@ -180,17 +174,45 @@ export default {
         title: '联系方式',
         dataIndex: 'phone'
       }, {
-        title: '地址',
-        dataIndex: 'address'
+        title: '类型',
+        dataIndex: 'type',
+        customRender: (text, row, index) => {
+          switch (text) {
+            case '1':
+              return <a-tag>经销商</a-tag>
+            case '2':
+              return <a-tag>批发商</a-tag>
+            case '3':
+              return <a-tag>散客</a-tag>
+            case '4':
+              return <a-tag>代理商</a-tag>
+            default:
+              return '- -'
+          }
+        }
       }, {
-        title: '省份',
-        dataIndex: 'province'
+        title: '联系人',
+        dataIndex: 'contact',
+        customRender: (text, row, index) => {
+          if (text !== null) {
+            return text
+          } else {
+            return '- -'
+          }
+        }
       }, {
-        title: '城市',
-        dataIndex: 'city'
-      }, {
-        title: '区',
-        dataIndex: 'area'
+        title: '性别',
+        dataIndex: 'sex',
+        customRender: (text, row, index) => {
+          switch (text) {
+            case '1':
+              return <a-tag color="blue">男</a-tag>
+            case '2':
+              return <a-tag color="pink">女</a-tag>
+            default:
+              return '- -'
+          }
+        }
       }, {
         title: '注册时间',
         dataIndex: 'createDate',
@@ -348,7 +370,7 @@ export default {
       if (params.type === undefined) {
         delete params.type
       }
-      this.$get('/cos/user-info/page/list', {
+      this.$get('/cos/user-info/page', {
         ...params
       }).then((r) => {
         let data = r.data.data

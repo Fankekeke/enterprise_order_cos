@@ -1,5 +1,5 @@
 <template>
-  <a-modal v-model="show" title="用户详情" @cancel="onClose" :width="1200">
+  <a-modal v-model="show" title="用户详情" @cancel="onClose" :width="850">
     <template slot="footer">
       <a-button key="back" @click="onClose" type="danger">
         关闭
@@ -8,7 +8,7 @@
     <div style="font-size: 13px;font-family: SimHei" v-if="userData !== null">
       <a-row style="padding-left: 24px;padding-right: 24px;">
         <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">用户信息</span></a-col>
-        <a-col :span="8"><b>用户名称：</b>
+        <a-col :span="8"><b>企业名称：</b>
           {{ userData.name }}
         </a-col>
         <a-col :span="8"><b>用户编号：</b>
@@ -20,43 +20,65 @@
       </a-row>
       <br/>
       <a-row style="padding-left: 24px;padding-right: 24px;">
-        <a-col :span="8"><b>省份：</b>
-          {{ userData.province }}
+        <a-col :span="8"><b>类型：</b>
+          <a-tag v-if="userData.type == 1">经销商</a-tag>
+          <a-tag v-if="userData.type == 2">批发商</a-tag>
+          <a-tag v-if="userData.type == 3">散客</a-tag>
+          <a-tag v-if="userData.type == 4">代理商</a-tag>
         </a-col>
-        <a-col :span="8"><b>城市：</b>
-          {{ userData.city }}
+        <a-col :span="8"><b>联系人：</b>
+          {{ userData.contact }}
         </a-col>
-        <a-col :span="8"><b>区：</b>
-          {{ userData.area }}
-        </a-col>
-      </a-row>
-      <br/>
-      <a-row style="padding-left: 24px;padding-right: 24px;">
-        <a-col :span="16"><b>收货地址：</b>
-          {{ userData.address }}
-        </a-col>
-        <a-col :span="8"><b>注册时间：</b>
-          {{ userData.createDate }}
+        <a-col :span="8"><b>性别：</b>
+          <a-tag v-if="userData.sex == 1" color="blue">男</a-tag>
+          <a-tag v-if="userData.sex == 2" color="pink">女</a-tag>
         </a-col>
       </a-row>
       <br/>
       <a-row style="padding-left: 24px;padding-right: 24px;">
-        <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">电子处方</span></a-col>
+        <a-col :span="8"><b>邮箱地址：</b>
+          {{ userData.email }}
+        </a-col>
+        <a-col :span="8"><b>审核状态：</b>
+          <a-tag v-if="userData.status == 0">未审核</a-tag>
+          <a-tag v-if="userData.status == 1" color="red">审核驳回</a-tag>
+          <a-tag v-if="userData.status == 2" color="green">已审核</a-tag>
+        </a-col>
+        <a-col :span="8"><b>创建时间：</b>
+          {{ userData.createDate ? userData.createDate : '- -'}}
+        </a-col>
+      </a-row>
+      <br/>
+      <a-row style="padding-left: 24px;padding-right: 24px;">
+        <a-col :span="8"><b>审核时间：</b>
+          {{ userData.auditDate ? userData.auditDate : '- -'}}
+        </a-col>
+        <a-col :span="8"><b>消费金额：</b>
+          {{ userData.price ? userData.price : '- -'}}
+        </a-col>
+      </a-row>
+      <br/>
+      <br/>
+      <a-row style="padding-left: 24px;padding-right: 24px;">
+        <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">备注</span></a-col>
         <a-col :span="24">
-          <a-table :columns="columns" :data-source="durgList">
-            <template slot="contentShow" slot-scope="text, record">
-              <template>
-                <a-tooltip>
-                  <template slot="title">
-                    {{ record.cause }}
-                  </template>
-                  {{ record.cause.slice(0, 15) }} ...
-                </a-tooltip>
-              </template>
-            </template>
-          </a-table>
+          {{ userData.remark ? userData.remark : '- -'}}
         </a-col>
       </a-row>
+      <br/>
+      <a-col :span="24">
+        <a-upload
+          name="avatar"
+          action="http://127.0.0.1:9527/file/fileUpload/"
+          list-type="picture-card"
+          :file-list="fileList"
+          @preview="handlePreview"
+          @change="picHandleChange">
+        </a-upload>
+        <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">
+          <img alt="example" style="width: 100%" :src="previewImage" />
+        </a-modal>
+      </a-col>
     </div>
   </a-modal>
 </template>
@@ -90,59 +112,6 @@ export default {
       },
       set: function () {
       }
-    },
-    columns () {
-      return [{
-        title: '处方单号',
-        dataIndex: 'code'
-      }, {
-        title: '病因',
-        dataIndex: 'cause',
-        scopedSlots: { customRender: 'contentShow' }
-      }, {
-        title: '出具人',
-        dataIndex: 'checkIssuer',
-        customRender: (text, row, index) => {
-          if (text !== null) {
-            return text
-          } else {
-            return '- -'
-          }
-        }
-      }, {
-        title: '出具机构',
-        dataIndex: 'checkAgency',
-        customRender: (text, row, index) => {
-          if (text !== null) {
-            return text
-          } else {
-            return '- -'
-          }
-        }
-      }, {
-        title: '发布时间',
-        dataIndex: 'createDate',
-        customRender: (text, row, index) => {
-          if (text !== null) {
-            return text
-          } else {
-            return '- -'
-          }
-        }
-      }, {
-        title: '状态',
-        dataIndex: 'status',
-        customRender: (text, row, index) => {
-          switch (text) {
-            case 0:
-              return <a-tag color='red'>未处理</a-tag>
-            case 1:
-              return <a-tag color='green'>已处理</a-tag>
-            default:
-              return '- -'
-          }
-        }
-      }]
     }
   },
   data () {
@@ -157,10 +126,7 @@ export default {
   watch: {
     userShow: function (value) {
       if (value) {
-        // 药品信息
-        this.$get(`/cos/medication-info/list/byUser/${this.userData.id}`).then((r) => {
-          this.durgList = r.data.data
-        })
+        this.imagesInit(this.userData.images)
       }
     }
   },

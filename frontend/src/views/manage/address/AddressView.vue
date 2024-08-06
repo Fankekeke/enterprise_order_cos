@@ -24,22 +24,22 @@
           {{ addressData.area }}
         </a-col>
         <a-col :span="8"><b>联系人：</b>
-          {{ addressData.contactPerson }}
+          {{ addressData.contact }}
         </a-col>
         <a-col :span="8"><b>联系方式：</b>
-          {{ addressData.contactMethod }}
+          {{ addressData.phone }}
         </a-col>
       </a-row>
       <br/>
       <a-row style="padding-left: 24px;padding-right: 24px;">
         <a-col :span="8"><b>经度：</b>
-          {{ addressData.longitude }}
+          {{ addressData.longitude ? addressData.longitude : '- -' }}
         </a-col>
         <a-col :span="8"><b>纬度：</b>
-          {{ addressData.latitude }}
+          {{ addressData.latitude ? addressData.latitude : '- -' }}
         </a-col>
         <a-col :span="8"><b>所属用户：</b>
-          {{ addressData.name }}
+          {{ addressData.userName }}
         </a-col>
       </a-row>
       <br/>
@@ -56,10 +56,8 @@
       <a-row style="padding-left: 24px;padding-right: 24px;">
         <a-col style="margin-bottom: 5px"><span style="font-size: 15px;font-weight: 650;color: #000c17">地址位置</span></a-col>
       </a-row>
-      <div>
-        <a-card :bordered="false" style="height: 500px">
-          <div id="areas" style="width: 100%;height: 450px;box-shadow: 3px 3px 3px rgba(0, 0, 0, .2);background:#ec9e3c;color:#fff"></div>
-        </a-card>
+      <div style="height: 500px;padding-left: 24px;padding-right: 24px;">
+        <div id="areas" style="width: 100%;height: 450px;box-shadow: 3px 3px 3px rgba(0, 0, 0, .2);background:#ec9e3c;color:#fff"></div>
       </div>
     </div>
   </a-modal>

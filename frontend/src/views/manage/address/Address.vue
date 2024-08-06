@@ -7,7 +7,7 @@
           <div :class="advanced ? null: 'fold'">
             <a-col :md="6" :sm="24">
               <a-form-item
-                label="用户名称"
+                label="企业名称"
                 :labelCol="{span: 5}"
                 :wrapperCol="{span: 18, offset: 1}">
                 <a-input v-model="queryParams.name"/>
@@ -142,7 +142,7 @@ export default {
     columns () {
       return [{
         title: '所属用户',
-        dataIndex: 'name',
+        dataIndex: 'userName',
         customRender: (text, row, index) => {
           if (text !== null) {
             return text
@@ -185,8 +185,21 @@ export default {
           }
         }
       }, {
+        title: '默认地址',
+        dataIndex: 'defaultFlag',
+        customRender: (text, row, index) => {
+          switch (text) {
+            case '0':
+              return <a-tag>否</a-tag>
+            case '1':
+              return <a-tag color="blue">是</a-tag>
+            default:
+              return '- -'
+          }
+        }
+      }, {
         title: '联系人',
-        dataIndex: 'contactPerson',
+        dataIndex: 'contact',
         customRender: (text, row, index) => {
           if (text !== null) {
             return text
@@ -196,7 +209,7 @@ export default {
         }
       }, {
         title: '联系方式',
-        dataIndex: 'contactMethod',
+        dataIndex: 'phone',
         customRender: (text, row, index) => {
           if (text !== null) {
             return text
@@ -346,7 +359,7 @@ export default {
         params.size = this.pagination.defaultPageSize
         params.current = this.pagination.defaultCurrent
       }
-      params.userId = this.currentUser.userId
+      // params.userId = this.currentUser.userId
       this.$get('/cos/address-info/page', {
         ...params
       }).then((r) => {
