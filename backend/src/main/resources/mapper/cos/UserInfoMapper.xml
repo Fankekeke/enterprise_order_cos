@@ -17,6 +17,7 @@
         create_date,
         audit_date,
         remark,
+        price,
         user_id
         from
         user_info

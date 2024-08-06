@@ -6,6 +6,7 @@ import cc.mrbird.febs.common.utils.R;
 import cc.mrbird.febs.cos.entity.*;
 import cc.mrbird.febs.cos.service.*;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -13,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -37,6 +40,10 @@ public class OrderInfoController {
     private final IOrderOutInfoService orderOutInfoService;
 
     private final ILogisticsInfoService logisticsInfoService;
+
+    private final TemplateEngine templateEngine;
+
+    private final IMailService mailService;
 
     /**
      * 分页获取订单信息
@@ -63,6 +70,9 @@ public class OrderInfoController {
         OrderInfo orderInfo = orderInfoService.getById(orderId);
         orderInfoService.update(Wrappers.<OrderInfo>lambdaUpdate().set(OrderInfo::getStatus, "4").eq(OrderInfo::getId, orderId));
 
+        // 用户信息
+        UserInfo user = userInfoService.getById(orderInfo.getUserId());
+
         // 设置出库信息
         OrderOutInfo orderOutInfo = new OrderOutInfo();
         orderOutInfo.setName(DateUtil.formatChineseDate(new Date(), true, false) + "-" + orderInfo.getCode() + " 出库信息单");
@@ -85,6 +95,20 @@ public class OrderInfoController {
         // 出库记录
         orderOutInfo.setStoreRecord(JSONUtil.toJsonStr(recordInfoList));
         orderOutInfoService.addOrderOut(orderOutInfo);
+
+        // 发送邮件
+        if (StrUtil.isNotEmpty(user.getEmail())) {
+            Context context = new Context();
+            context.setVariable("today", DateUtil.formatDate(new Date()));
+            context.setVariable("custom", user.getName() + "，您好。您的订单 " + orderInfo.getCode() + "已发货，请注意查看");
+            String emailContent = templateEngine.process("registerEmail", context);
+            mailService.sendHtmlMail(user.getEmail(), DateUtil.formatDate(new Date()) + "订单发货通知", emailContent);
+        }
+        Context context = new Context();
+        context.setVariable("today", DateUtil.formatDate(new Date()));
+        context.setVariable("custom", "用户：" + user.getName() + "，订单 " + orderInfo.getCode() + "已发货，请注意查看");
+        String emailContent = templateEngine.process("registerEmail", context);
+        mailService.sendHtmlMail("fan1ke2ke@gmail.com", DateUtil.formatDate(new Date()) + "订单发货通知-管理员", emailContent);
 
         // 添加物流信息
         LogisticsInfo logistics = new LogisticsInfo();

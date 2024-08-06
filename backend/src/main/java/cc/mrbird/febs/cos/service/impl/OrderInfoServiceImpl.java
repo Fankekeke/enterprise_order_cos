@@ -139,8 +139,8 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         // 如果为预付款
         if ("1".equals(orderInfo.getType())) {
-            // 预付款金额为30%
-            orderInfo.setSubsistPrice(NumberUtil.mul(orderInfo.getTotalPrice(), 0.3));
+            // 预付款金额为40%
+            orderInfo.setSubsistPrice(NumberUtil.mul(orderInfo.getTotalPrice(), 0.4));
             orderInfo.setOwePrice(NumberUtil.sub(totalPrice, orderInfo.getSubsistPrice()));
         }
         this.save(orderInfo);

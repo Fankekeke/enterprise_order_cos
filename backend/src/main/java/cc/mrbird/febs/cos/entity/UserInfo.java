@@ -1,9 +1,11 @@
 package cc.mrbird.febs.cos.entity;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.io.Serializable;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -86,4 +88,9 @@ public class UserInfo implements Serializable {
      * 所属账户
      */
     private Integer userId;
+
+    /**
+     * 总消费金额
+     */
+    private BigDecimal price;
 }
