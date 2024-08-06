@@ -189,6 +189,6 @@ public class OrderInfoController {
      */
     @GetMapping("/statistics/month")
     public R selectStoreStatisticsByMonth(String date) {
-        return R.ok();
+        return R.ok(orderInfoService.selectStoreStatisticsByMonth(date));
     }
 }
