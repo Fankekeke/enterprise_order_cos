@@ -19,6 +19,16 @@
           </a-form-item>
         </a-col>
         <a-col :span="12">
+          <a-form-item label='商品类型' v-bind="formItemLayout">
+            <a-select v-decorator="[
+                  'typeId',
+                  { rules: [{ required: true, message: '请输入类型!' }] }
+                  ]">
+              <a-select-option :value="item.id" v-for="(item, index) in typeList" :key="index">{{ item.name }}</a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+        <a-col :span="12">
           <a-form-item label='型号' v-bind="formItemLayout">
             <a-input v-decorator="[
             'model',
@@ -27,26 +37,33 @@
           </a-form-item>
         </a-col>
         <a-col :span="12">
-          <a-form-item label='商品价格' v-bind="formItemLayout">
-            <a-input-number style="width: 100%" :min="0.1" v-decorator="[
-            'price',
-            { rules: [{ required: true, message: '请输入商品价格!' }] }
+          <a-form-item label='单位' v-bind="formItemLayout">
+            <a-input v-decorator="[
+            'unit',
+            { rules: [{ required: true, message: '请输入单位!' }] }
             ]"/>
           </a-form-item>
         </a-col>
-         <a-col :span="12">
-          <a-form-item label='当前库存' v-bind="formItemLayout">
-            <a-input-number style="width: 100%" :min="1" v-decorator="[
-            'stockNum',
-            { rules: [{ required: true, message: '请输入当前库存!' }] }
+        <a-col :span="12">
+          <a-form-item label='采购价格' v-bind="formItemLayout">
+            <a-input-number style="width: 100%" :min="0.1" v-decorator="[
+            'purchasePrice',
+            { rules: [{ required: true, message: '请输入采购价格!' }] }
+            ]"/>
+          </a-form-item>
+        </a-col>
+        <a-col :span="12">
+          <a-form-item label='售价' v-bind="formItemLayout">
+            <a-input-number style="width: 100%" :min="0.1" v-decorator="[
+            'sellPrice',
+            { rules: [{ required: true, message: '请输入售价!' }] }
             ]"/>
           </a-form-item>
         </a-col>
         <a-col :span="24">
           <a-form-item label='备注' v-bind="formItemLayout">
             <a-textarea :rows="6" v-decorator="[
-            'remark',
-             { rules: [{ required: true, message: '请输入名称!' }] }
+            'remark'
             ]"/>
           </a-form-item>
         </a-col>
@@ -117,10 +134,19 @@ export default {
       loading: false,
       fileList: [],
       previewVisible: false,
-      previewImage: ''
+      previewImage: '',
+      typeList: []
     }
   },
+  mounted() {
+    this.selectTypeList()
+  },
   methods: {
+    selectTypeList () {
+      this.$get('/cos/commodity-type/list').then((r) => {
+        this.typeList = r.data.data
+      })
+    },
     handleCancel () {
       this.previewVisible = false
     },

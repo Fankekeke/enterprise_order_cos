@@ -11,21 +11,11 @@
     <a-form :form="form" layout="vertical">
       <a-row :gutter="20">
         <a-col :span="12">
-          <a-form-item label='商品折扣设置姓名' v-bind="formItemLayout">
+          <a-form-item label='商品名称' v-bind="formItemLayout">
             <a-input disabled v-decorator="[
             'name',
             { rules: [{ required: true, message: '请输入商品折扣设置姓名!' }] }
             ]"/>
-          </a-form-item>
-        </a-col>
-        <a-col :span="12">
-          <a-form-item label='性别' v-bind="formItemLayout">
-            <a-select v-decorator="[
-                  'sex',
-                  ]">
-              <a-select-option value="1">男</a-select-option>
-              <a-select-option value="2">女</a-select-option>
-            </a-select>
           </a-form-item>
         </a-col>
         <a-col :span="12">

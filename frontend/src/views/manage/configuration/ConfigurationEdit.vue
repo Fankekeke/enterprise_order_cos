@@ -34,6 +34,13 @@
             ]"/>
           </a-form-item>
         </a-col>
+        <a-col :span="24">
+          <a-form-item label='备注' v-bind="formItemLayout">
+            <a-textarea :rows="4" v-decorator="[
+            'remark'
+            ]"/>
+          </a-form-item>
+        </a-col>
       </a-row>
     </a-form>
   </a-modal>
@@ -110,7 +117,7 @@ export default {
     },
     setFormValues ({...configuration}) {
       this.rowId = configuration.id
-      let fields = ['name', 'code', 'alertNum']
+      let fields = ['name', 'code', 'alertNum', 'remark']
       let obj = {}
       Object.keys(configuration).forEach((key) => {
         if (key === 'images') {

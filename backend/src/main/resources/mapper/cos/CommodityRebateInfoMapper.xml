@@ -34,7 +34,7 @@
         <if test="commodityRebateInfo.typeName != null and commodityRebateInfo.typeName != ''">
             AND ct.name LIKE CONCAT('%',#{commodityRebateInfo.typeName},'%')
         </if>
-        order bu cri.create_date desc
+        order by cri.create_date desc
 
     </select>
 </mapper>
