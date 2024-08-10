@@ -26,6 +26,15 @@ public interface StoreRecordInfoMapper extends BaseMapper<StoreRecordInfo> {
     IPage<LinkedHashMap<String, Object>> selectStoreRecordPage(Page<StoreRecordInfo> page, @Param("storeRecordInfo") StoreRecordInfo storeRecordInfo);
 
     /**
+     * 分页获取库房库存
+     *
+     * @param page            分页对象
+     * @param storeRecordInfo 库房记录信息
+     * @return 结果
+     */
+    IPage<LinkedHashMap<String, Object>> selectStorePage(Page<StoreRecordInfo> page, @Param("storeRecordInfo") StoreRecordInfo storeRecordInfo);
+
+    /**
      * 根据年月获取商品出入库信息
      *
      * @param year  年份

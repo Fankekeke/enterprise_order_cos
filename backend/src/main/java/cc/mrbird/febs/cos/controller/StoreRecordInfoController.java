@@ -36,6 +36,29 @@ public class StoreRecordInfoController {
     }
 
     /**
+     * 分页获取库房库存
+     *
+     * @param page            分页对象
+     * @param storeRecordInfo 库房记录信息
+     * @return 结果
+     */
+    @GetMapping("/stock/page")
+    public R selectStorePage(Page<StoreRecordInfo> page, StoreRecordInfo storeRecordInfo) {
+        return R.ok(storeRecordInfoService.selectStorePage(page, storeRecordInfo));
+    }
+
+    /**
+     * 根据商品编号获取出库入库记录
+     *
+     * @param commodityCode 商品编号
+     * @return 结果
+     */
+    @GetMapping("/selectOutInDetail")
+    public R selectOutInDetail(String commodityCode) {
+        return R.ok(storeRecordInfoService.selectOutInDetail(commodityCode));
+    }
+
+    /**
      * 查询库房记录信息详情
      *
      * @param id 主键ID

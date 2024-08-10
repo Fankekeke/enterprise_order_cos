@@ -31,7 +31,7 @@
             </a-col>
           </div>
           <span style="float: right; margin-top: 3px;">
-            <a-button orderOut="primary" @click="search">查询</a-button>
+            <a-button type="primary" @click="search">查询</a-button>
             <a-button style="margin-left: 8px" @click="reset">重置</a-button>
           </span>
         </a-row>
@@ -39,7 +39,7 @@
     </div>
     <div>
       <div class="operator">
-        <a-button orderOut="primary" ghost @click="add">新增</a-button>
+<!--        <a-button type="primary" ghost @click="add">新增</a-button>-->
       </div>
       <!-- 表格区域 -->
       <a-table ref="TableInfo"
@@ -62,8 +62,8 @@
           </template>
         </template>
         <template slot="operation" slot-scope="text, record">
-          <a-icon orderOut="cloud" @click="handleorderOutViewOpen(record)" title="详 情" style="margin-right: 10px"></a-icon>
-          <a-icon orderOut="setting" theme="twoTone" twoToneColor="#4a9ff5" @click="edit(record)" title="修 改" style="margin-right: 10px"></a-icon>
+          <a-icon type="cloud" @click="handleorderOutViewOpen(record)" title="详 情" style="margin-right: 10px"></a-icon>
+<!--          <a-icon orderOut="setting" theme="twoTone" twoToneColor="#4a9ff5" @click="edit(record)" title="修 改" style="margin-right: 10px"></a-icon>-->
         </template>
       </a-table>
     </div>
@@ -136,10 +136,10 @@ export default {
     }),
     columns () {
       return [{
-        title: '入库单号',
+        title: '出库单号',
         dataIndex: 'code'
       }, {
-        title: '入库名称',
+        title: '出库名称',
         dataIndex: 'name',
         customRender: (text, row, index) => {
           if (text !== null) {
@@ -159,7 +159,7 @@ export default {
           }
         }
       }, {
-        title: '入库人',
+        title: '出库人',
         dataIndex: 'putUser',
         customRender: (text, row, index) => {
           if (text !== null) {
@@ -179,7 +179,7 @@ export default {
           }
         }
       }, {
-        title: '创建时间',
+        title: '出库时间',
         dataIndex: 'createDate',
         customRender: (text, row, index) => {
           if (text !== null) {
@@ -250,7 +250,7 @@ export default {
         centered: true,
         onOk () {
           let ids = that.selectedRowKeys.join(',')
-          that.$delete('/cos/orderOut-info/' + ids).then(() => {
+          that.$delete('/cos/order-out-info/' + ids).then(() => {
             that.$message.success('删除成功')
             that.selectedRowKeys = []
             that.search()
@@ -320,10 +320,7 @@ export default {
         params.size = this.pagination.defaultPageSize
         params.current = this.pagination.defaultCurrent
       }
-      if (params.orderOut === undefined) {
-        delete params.orderOut
-      }
-      this.$get('/cos/orderOut-info/page/list', {
+      this.$get('/cos/order-out-info/page', {
         ...params
       }).then((r) => {
         let data = r.data.data

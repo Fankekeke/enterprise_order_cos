@@ -1,5 +1,5 @@
 <template>
-  <a-modal v-model="show" title="商品折扣设置详情" @cancel="onClose" :width="1200">
+  <a-modal v-model="show" title="商品折扣设置详情" @cancel="onClose" :width="1000">
     <template slot="footer">
       <a-button key="back" @click="onClose" rebate="danger">
         关闭
@@ -7,56 +7,66 @@
     </template>
     <div style="font-size: 13px;font-family: SimHei" v-if="rebateData !== null">
       <a-row style="padding-left: 24px;padding-right: 24px;">
-        <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">商品折扣设置信息</span></a-col>
-        <a-col :span="8"><b>商品折扣设置名称：</b>
-          {{ rebateData.name }}
+        <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">商品信息</span></a-col>
+        <a-col :span="8"><b>商品名称：</b>
+          {{ rebateData.commodityName }}
         </a-col>
-        <a-col :span="8"><b>商品折扣设置编号：</b>
-          {{ rebateData.code }}
+        <a-col :span="8"><b>商品型号：</b>
+          {{ rebateData.model }}
         </a-col>
-        <a-col :span="8"><b>联系方式：</b>
-          {{ rebateData.phone }}
+        <a-col :span="8"><b>商品类型：</b>
+          {{ rebateData.typeName }}
+        </a-col>
+        <br/>
+        <br/>
+        <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">商品图片</span></a-col>
+        <a-col :span="24">
+          <a-upload
+            name="avatar"
+            action="http://127.0.0.1:9527/file/fileUpload/"
+            list-type="picture-card"
+            :file-list="fileList"
+            @preview="handlePreview"
+            @change="picHandleChange">
+          </a-upload>
+          <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">
+            <img alt="example" style="width: 100%" :src="previewImage" />
+          </a-modal>
         </a-col>
       </a-row>
       <br/>
       <a-row style="padding-left: 24px;padding-right: 24px;">
-        <a-col :span="8"><b>省份：</b>
-          {{ rebateData.province }}
+        <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">折扣信息</span></a-col>
+        <a-col :span="8"><b>底价折扣：</b>
+          {{ rebateData.lowRate }}
         </a-col>
-        <a-col :span="8"><b>城市：</b>
-          {{ rebateData.city }}
+        <a-col :span="8"><b>正常价格：</b>
+          {{ rebateData.specialPrice }}
         </a-col>
-        <a-col :span="8"><b>区：</b>
-          {{ rebateData.area }}
+        <a-col :span="8"><b>商品类型：</b>
+          {{ rebateData.normalPrice }}
         </a-col>
       </a-row>
       <br/>
       <a-row style="padding-left: 24px;padding-right: 24px;">
-        <a-col :span="16"><b>收货地址：</b>
-          {{ rebateData.address }}
+        <a-col :span="8"><b>底价限制：</b>
+          {{ rebateData.lowRestriction ? rebateData.lowRestriction : '无'}}
         </a-col>
-        <a-col :span="8"><b>注册时间：</b>
+        <a-col :span="8"><b>特价限制：</b>
+          {{ rebateData.specialRestriction ? rebateData.specialRestriction : '无'}}
+        </a-col>
+        <a-col :span="8"><b>创建时间：</b>
           {{ rebateData.createDate }}
         </a-col>
       </a-row>
       <br/>
       <a-row style="padding-left: 24px;padding-right: 24px;">
-        <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">电子处方</span></a-col>
+        <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">备注</span></a-col>
         <a-col :span="24">
-          <a-table :columns="columns" :data-source="durgList">
-            <template slot="contentShow" slot-scope="text, record">
-              <template>
-                <a-tooltip>
-                  <template slot="title">
-                    {{ record.cause }}
-                  </template>
-                  {{ record.cause.slice(0, 15) }} ...
-                </a-tooltip>
-              </template>
-            </template>
-          </a-table>
+          {{ rebateData.remark ? rebateData.remark : '无'}}
         </a-col>
       </a-row>
+      <br/>
     </div>
   </a-modal>
 </template>
@@ -90,59 +100,6 @@ export default {
       },
       set: function () {
       }
-    },
-    columns () {
-      return [{
-        title: '处方单号',
-        dataIndex: 'code'
-      }, {
-        title: '病因',
-        dataIndex: 'cause',
-        scopedSlots: { customRender: 'contentShow' }
-      }, {
-        title: '出具人',
-        dataIndex: 'checkIssuer',
-        customRender: (text, row, index) => {
-          if (text !== null) {
-            return text
-          } else {
-            return '- -'
-          }
-        }
-      }, {
-        title: '出具机构',
-        dataIndex: 'checkAgency',
-        customRender: (text, row, index) => {
-          if (text !== null) {
-            return text
-          } else {
-            return '- -'
-          }
-        }
-      }, {
-        title: '发布时间',
-        dataIndex: 'createDate',
-        customRender: (text, row, index) => {
-          if (text !== null) {
-            return text
-          } else {
-            return '- -'
-          }
-        }
-      }, {
-        title: '状态',
-        dataIndex: 'status',
-        customRender: (text, row, index) => {
-          switch (text) {
-            case 0:
-              return <a-tag color='red'>未处理</a-tag>
-            case 1:
-              return <a-tag color='green'>已处理</a-tag>
-            default:
-              return '- -'
-          }
-        }
-      }]
     }
   },
   data () {
@@ -157,10 +114,7 @@ export default {
   watch: {
     rebateShow: function (value) {
       if (value) {
-        // 药品信息
-        this.$get(`/cos/medication-info/list/byrebate/${this.rebateData.id}`).then((r) => {
-          this.durgList = r.data.data
-        })
+        this.imagesInit(this.rebateData.images)
       }
     }
   },

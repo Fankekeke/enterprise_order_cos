@@ -8,42 +8,33 @@
     <div style="font-size: 13px;font-family: SimHei" v-if="orderOutData !== null">
       <a-row style="padding-left: 24px;padding-right: 24px;">
         <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">库房出库信息</span></a-col>
-        <a-col :span="8"><b>库房出库名称：</b>
+        <a-col :span="8"><b>出库单名称：</b>
           {{ orderOutData.name }}
         </a-col>
-        <a-col :span="8"><b>库房出库编号：</b>
+        <a-col :span="8"><b>出库单编号：</b>
           {{ orderOutData.code }}
         </a-col>
-        <a-col :span="8"><b>联系方式：</b>
-          {{ orderOutData.phone }}
+        <a-col :span="8"><b>出库人：</b>
+          {{ orderOutData.putUser }}
         </a-col>
       </a-row>
       <br/>
       <a-row style="padding-left: 24px;padding-right: 24px;">
-        <a-col :span="8"><b>省份：</b>
-          {{ orderOutData.province }}
+        <a-col :span="8"><b>总价格：</b>
+          {{ orderOutData.totalPrice }} 元
         </a-col>
-        <a-col :span="8"><b>城市：</b>
-          {{ orderOutData.city }}
+        <a-col :span="8"><b>备注：</b>
+          {{ orderOutData.remark }}
         </a-col>
-        <a-col :span="8"><b>区：</b>
-          {{ orderOutData.area }}
-        </a-col>
-      </a-row>
-      <br/>
-      <a-row style="padding-left: 24px;padding-right: 24px;">
-        <a-col :span="16"><b>收货地址：</b>
-          {{ orderOutData.address }}
-        </a-col>
-        <a-col :span="8"><b>注册时间：</b>
+        <a-col :span="8"><b>出库时间：</b>
           {{ orderOutData.createDate }}
         </a-col>
       </a-row>
       <br/>
       <a-row style="padding-left: 24px;padding-right: 24px;">
-        <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">电子处方</span></a-col>
+        <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">出库商品</span></a-col>
         <a-col :span="24">
-          <a-table :columns="columns" :data-source="durgList">
+          <a-table :columns="columns" :data-source="commodityList">
             <template slot="contentShow" slot-scope="text, record">
               <template>
                 <a-tooltip>
@@ -93,15 +84,26 @@ export default {
     },
     columns () {
       return [{
-        title: '处方单号',
-        dataIndex: 'code'
+        title: '商品名称',
+        dataIndex: 'name'
       }, {
-        title: '病因',
-        dataIndex: 'cause',
-        scopedSlots: { customRender: 'contentShow' }
+        title: '型号',
+        dataIndex: 'model'
       }, {
-        title: '出具人',
-        dataIndex: 'checkIssuer',
+        title: '商品图片',
+        dataIndex: 'images',
+        customRender: (text, record, index) => {
+          if (!record.images) return <a-avatar shape="square" icon="user" />
+          return <a-popover>
+            <template slot="content">
+              <a-avatar shape="square" size={132} icon="user" src={ 'http://127.0.0.1:9527/imagesWeb/' + record.images.split(',')[0] } />
+            </template>
+            <a-avatar shape="square" icon="user" src={ 'http://127.0.0.1:9527/imagesWeb/' + record.images.split(',')[0] } />
+          </a-popover>
+        }
+      }, {
+        title: '采购数量',
+        dataIndex: 'num',
         customRender: (text, row, index) => {
           if (text !== null) {
             return text
@@ -110,8 +112,8 @@ export default {
           }
         }
       }, {
-        title: '出具机构',
-        dataIndex: 'checkAgency',
+        title: '单价',
+        dataIndex: 'price',
         customRender: (text, row, index) => {
           if (text !== null) {
             return text
@@ -120,26 +122,13 @@ export default {
           }
         }
       }, {
-        title: '发布时间',
-        dataIndex: 'createDate',
+        title: '总金额',
+        dataIndex: 'totalPrice',
         customRender: (text, row, index) => {
           if (text !== null) {
             return text
           } else {
             return '- -'
-          }
-        }
-      }, {
-        title: '状态',
-        dataIndex: 'status',
-        customRender: (text, row, index) => {
-          switch (text) {
-            case 0:
-              return <a-tag color='red'>未处理</a-tag>
-            case 1:
-              return <a-tag color='green'>已处理</a-tag>
-            default:
-              return '- -'
           }
         }
       }]
@@ -151,15 +140,14 @@ export default {
       fileList: [],
       previewVisible: false,
       previewImage: '',
-      durgList: []
+      commodityList: []
     }
   },
   watch: {
     orderOutShow: function (value) {
       if (value) {
-        // 药品信息
-        this.$get(`/cos/medication-info/list/byorderOut/${this.orderOutData.id}`).then((r) => {
-          this.durgList = r.data.data
+        this.$get(`/cos/order-out-info/${this.orderOutData.id}`).then((r) => {
+          this.commodityList = r.data.record
         })
       }
     }

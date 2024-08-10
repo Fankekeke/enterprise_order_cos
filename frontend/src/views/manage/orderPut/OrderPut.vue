@@ -31,7 +31,7 @@
             </a-col>
           </div>
           <span style="float: right; margin-top: 3px;">
-            <a-button orderPut="primary" @click="search">查询</a-button>
+            <a-button type="primary" @click="search">查询</a-button>
             <a-button style="margin-left: 8px" @click="reset">重置</a-button>
           </span>
         </a-row>
@@ -39,7 +39,7 @@
     </div>
     <div>
       <div class="operator">
-        <a-button orderPut="primary" ghost @click="add">新增</a-button>
+<!--        <a-button type="primary" ghost @click="add">新增</a-button>-->
       </div>
       <!-- 表格区域 -->
       <a-table ref="TableInfo"
@@ -62,8 +62,8 @@
           </template>
         </template>
         <template slot="operation" slot-scope="text, record">
-          <a-icon orderPut="cloud" @click="handleorderPutViewOpen(record)" title="详 情" style="margin-right: 10px"></a-icon>
-          <a-icon orderPut="setting" theme="twoTone" twoToneColor="#4a9ff5" @click="edit(record)" title="修 改" style="margin-right: 10px"></a-icon>
+          <a-icon type="cloud" @click="handleorderPutViewOpen(record)" title="详 情" style="margin-right: 10px"></a-icon>
+<!--          <a-icon type="setting" theme="twoTone" twoToneColor="#4a9ff5" @click="edit(record)" title="修 改" style="margin-right: 10px"></a-icon>-->
         </template>
       </a-table>
     </div>
@@ -250,7 +250,7 @@ export default {
         centered: true,
         onOk () {
           let ids = that.selectedRowKeys.join(',')
-          that.$delete('/cos/orderPut-info/' + ids).then(() => {
+          that.$delete('/cos/order-put-info/' + ids).then(() => {
             that.$message.success('删除成功')
             that.selectedRowKeys = []
             that.search()
@@ -320,10 +320,7 @@ export default {
         params.size = this.pagination.defaultPageSize
         params.current = this.pagination.defaultCurrent
       }
-      if (params.orderPut === undefined) {
-        delete params.orderPut
-      }
-      this.$get('/cos/orderPut-info/page/list', {
+      this.$get('/cos/order-put-info/page', {
         ...params
       }).then((r) => {
         let data = r.data.data

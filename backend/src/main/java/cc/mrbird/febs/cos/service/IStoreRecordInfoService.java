@@ -23,4 +23,21 @@ public interface IStoreRecordInfoService extends IService<StoreRecordInfo> {
      * @return 结果
      */
     IPage<LinkedHashMap<String, Object>> selectStoreRecordPage(Page<StoreRecordInfo> page, StoreRecordInfo storeRecordInfo);
+
+    /**
+     * 分页获取库房库存
+     *
+     * @param page            分页对象
+     * @param storeRecordInfo 库房记录信息
+     * @return 结果
+     */
+    IPage<LinkedHashMap<String, Object>> selectStorePage(Page<StoreRecordInfo> page, StoreRecordInfo storeRecordInfo);
+
+    /**
+     * 根据商品编号获取出库入库记录
+     *
+     * @param commodityCode 商品编号
+     * @return 结果
+     */
+    LinkedHashMap<String, Object> selectOutInDetail(String commodityCode);
 }

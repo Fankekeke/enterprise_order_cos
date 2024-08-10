@@ -6,13 +6,15 @@
     <select id="selectStockAlertPage" resultType="java.util.LinkedHashMap">
         select sai.id,
         sai.commodity_id,
-        sai.remark,
+        sai.remark as alertRemark,
         sai.status,
         sai.create_date,
         sai.current_num,
         sai.put_num,
         ci.name as commodityName,
         ci.model,
+        ci.code,
+        ci.purchase_price,
         ci.unit,
         ci.images,
         ct.name as typeName

@@ -42,7 +42,7 @@
     </div>
     <div>
       <div class="operator">
-        <a-button type="primary" ghost @click="add">新增</a-button>
+<!--        <a-button type="primary" ghost @click="add">新增</a-button>-->
         <a-button @click="batchDelete">删除</a-button>
       </div>
       <!-- 表格区域 -->
@@ -78,43 +78,43 @@
           </template>
         </template>
         <template slot="operation" slot-scope="text, record">
-          <a-icon type="setting" theme="twoTone" twoToneColor="#4a9ff5" @click="edit(record)" title="修 改"></a-icon>
+          <a-icon v-if="record.status == 0" type="setting" theme="twoTone" twoToneColor="#4a9ff5" @click="edit(record)" title="修 改"></a-icon>
         </template>
       </a-table>
     </div>
-    <aler-add
-      v-if="alerAdd.visiable"
-      @close="handlealerAddClose"
-      @success="handlealerAddSuccess"
-      :alerAddVisiable="alerAdd.visiable">
-    </aler-add>
-    <aler-edit
-      ref="alerEdit"
-      @close="handlealerEditClose"
-      @success="handlealerEditSuccess"
-      :alerEditVisiable="alerEdit.visiable">
-    </aler-edit>
+    <alert-add
+      v-if="alertAdd.visiable"
+      @close="handlealertAddClose"
+      @success="handlealertAddSuccess"
+      :alertAddVisiable="alertAdd.visiable">
+    </alert-add>
+    <alert-edit
+      ref="alertEdit"
+      @close="handlealertEditClose"
+      @success="handlealertEditSuccess"
+      :alertEditVisiable="alertEdit.visiable">
+    </alert-edit>
   </a-card>
 </template>
 
 <script>
 import RangeDate from '@/components/datetime/RangeDate'
-import alerAdd from './AlertAdd.vue'
-import alerEdit from './AlertEdit.vue'
+import alertAdd from './AlertAdd.vue'
+import alertEdit from './AlertEdit.vue'
 import {mapState} from 'vuex'
 import moment from 'moment'
 moment.locale('zh-cn')
 
 export default {
-  name: 'aler',
-  components: {alerAdd, alerEdit, RangeDate},
+  name: 'alert',
+  components: {alertAdd, alertEdit, RangeDate},
   data () {
     return {
       advanced: false,
-      alerAdd: {
+      alertAdd: {
         visiable: false
       },
-      alerEdit: {
+      alertEdit: {
         visiable: false
       },
       queryParams: {},
@@ -232,25 +232,25 @@ export default {
       this.advanced = !this.advanced
     },
     add () {
-      this.alerAdd.visiable = true
+      this.alertAdd.visiable = true
     },
-    handlealerAddClose () {
-      this.alerAdd.visiable = false
+    handlealertAddClose () {
+      this.alertAdd.visiable = false
     },
-    handlealerAddSuccess () {
-      this.alerAdd.visiable = false
+    handlealertAddSuccess () {
+      this.alertAdd.visiable = false
       this.$message.success('新增库房预警成功')
       this.search()
     },
     edit (record) {
-      this.$refs.alerEdit.setFormValues(record)
-      this.alerEdit.visiable = true
+      this.$refs.alertEdit.setFormValues(record)
+      this.alertEdit.visiable = true
     },
-    handlealerEditClose () {
-      this.alerEdit.visiable = false
+    handlealertEditClose () {
+      this.alertEdit.visiable = false
     },
-    handlealerEditSuccess () {
-      this.alerEdit.visiable = false
+    handlealertEditSuccess () {
+      this.alertEdit.visiable = false
       this.$message.success('修改库房预警成功')
       this.search()
     },
@@ -269,7 +269,7 @@ export default {
         centered: true,
         onOk () {
           let ids = that.selectedRowKeys.join(',')
-          that.$delete('/cos/aler-info/' + ids).then(() => {
+          that.$delete('/cos/stock-alert-info/' + ids).then(() => {
             that.$message.success('删除成功')
             that.selectedRowKeys = []
             that.search()
@@ -339,7 +339,7 @@ export default {
         params.size = this.pagination.defaultPageSize
         params.current = this.pagination.defaultCurrent
       }
-      this.$get('/cos/aler-info/page', {
+      this.$get('/cos/stock-alert-info/page', {
         ...params
       }).then((r) => {
         let data = r.data.data

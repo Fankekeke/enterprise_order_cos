@@ -1,5 +1,5 @@
 <template>
-  <a-modal v-model="show" title="修改库房预警" @cancel="onClose" :width="800">
+  <a-modal v-model="show" title="库存补货" @cancel="onClose" :width="800">
     <template slot="footer">
       <a-button key="back" @click="onClose">
         取消
@@ -10,61 +10,66 @@
     </template>
     <a-form :form="form" layout="vertical">
       <a-row :gutter="20">
-        <a-col :span="12">
-          <a-form-item label='库房预警标题' v-bind="formItemLayout">
-            <a-input v-decorator="[
-            'title',
-            { rules: [{ required: true, message: '请输入名称!' }] }
+        <a-col :span="8">
+          <a-form-item label='商品编号' v-bind="formItemLayout">
+            <a-input disabled v-decorator="[
+            'code',
+            { rules: [{ required: true, message: '请输入商品编号!' }] }
             ]"/>
           </a-form-item>
         </a-col>
-        <a-col :span="12">
+        <a-col :span="8">
+          <a-form-item label='商品名称' v-bind="formItemLayout">
+            <a-input disabled v-decorator="[
+            'commodityName',
+            { rules: [{ required: true, message: '请输入商品名称!' }] }
+            ]"/>
+          </a-form-item>
+        </a-col>
+        <a-col :span="8">
+          <a-form-item label='当前库存' v-bind="formItemLayout">
+            <a-input disabled v-decorator="[
+            'currentNum',
+            { rules: [{ required: true, message: '请输入当前库存!' }] }
+            ]"/>
+          </a-form-item>
+        </a-col>
+        <a-col :span="24">
+          <a-form-item label='报警信息' v-bind="formItemLayout">
+            <a-textarea disabled :rows="4" v-decorator="[
+            'alertRemark'
+            ]"/>
+          </a-form-item>
+        </a-col>
+        <a-col :span="8">
+          <a-form-item label='入库单名称' v-bind="formItemLayout">
+            <a-input v-decorator="[
+            'name',
+            { rules: [{ required: true, message: '请输入入库单名称!' }] }
+            ]"/>
+          </a-form-item>
+        </a-col>
+        <a-col :span="8">
           <a-form-item label='上传人' v-bind="formItemLayout">
             <a-input v-decorator="[
-            'publisher',
+            'putUser',
             { rules: [{ required: true, message: '请输入上传人!' }] }
             ]"/>
           </a-form-item>
         </a-col>
-        <a-col :span="12">
-          <a-form-item label='库房预警状态' v-bind="formItemLayout">
-            <a-select v-decorator="[
-              'rackUp',
-              { rules: [{ required: true, message: '请输入库房预警状态!' }] }
-              ]">
-              <a-select-option value="0">下架</a-select-option>
-              <a-select-option value="1">已发布</a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col>
-        <a-col :span="24">
-          <a-form-item label='库房预警内容' v-bind="formItemLayout">
-            <a-textarea :rows="6" v-decorator="[
-            'content',
-             { rules: [{ required: true, message: '请输入名称!' }] }
+        <a-col :span="8">
+          <a-form-item label='入库数量' v-bind="formItemLayout">
+            <a-input-number :min="1" style="width: 100%" v-decorator="[
+            'putNum',
+            { rules: [{ required: true, message: '请输入入库数量!' }] }
             ]"/>
           </a-form-item>
         </a-col>
         <a-col :span="24">
-          <a-form-item label='图册' v-bind="formItemLayout">
-            <a-upload
-              name="avatar"
-              action="http://127.0.0.1:9527/file/fileUpload/"
-              list-type="picture-card"
-              :file-list="fileList"
-              @preview="handlePreview"
-              @change="picHandleChange"
-            >
-              <div v-if="fileList.length < 8">
-                <a-icon type="plus" />
-                <div class="ant-upload-text">
-                  Upload
-                </div>
-              </div>
-            </a-upload>
-            <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">
-              <img alt="example" style="width: 100%" :src="previewImage" />
-            </a-modal>
+          <a-form-item label='入库备注' v-bind="formItemLayout">
+            <a-textarea :rows="6" v-decorator="[
+            'remark'
+            ]"/>
           </a-form-item>
         </a-col>
       </a-row>
@@ -107,6 +112,7 @@ export default {
   },
   data () {
     return {
+      alertData: null,
       rowId: null,
       formItemLayout,
       form: this.$form.createForm(this),
@@ -140,16 +146,14 @@ export default {
       }
     },
     setFormValues ({...alert}) {
+      this.alertData = alert
       this.rowId = alert.id
-      let fields = ['title', 'content', 'publisher', 'rackUp']
+      let fields = ['code', 'commodityName', 'alertRemark', 'currentNum']
       let obj = {}
       Object.keys(alert).forEach((key) => {
         if (key === 'images') {
           this.fileList = []
           this.imagesInit(alert['images'])
-        }
-        if (key === 'rackUp') {
-          alert[key] = alert[key].toString()
         }
         if (fields.indexOf(key) !== -1) {
           this.form.getFieldDecorator(key)
@@ -167,25 +171,23 @@ export default {
       this.$emit('close')
     },
     handleSubmit () {
-      // 获取图片List
-      let images = []
-      this.fileList.forEach(image => {
-        if (image.response !== undefined) {
-          images.push(image.response)
-        } else {
-          images.push(image.name)
-        }
-      })
       this.form.validateFields((err, values) => {
-        values.id = this.rowId
-        values.images = images.length > 0 ? images.join(',') : null
+        let storeRecord = [{
+          commodityCode: this.alertData.code,
+          num: values.putNum,
+          type: '1',
+          price: this.alertData.purchasePrice
+        }]
         if (!err) {
+          values.storeRecord = JSON.stringify(storeRecord)
           this.loading = true
-          this.$put('/cos/alert-info', {
+          this.$post('/cos/order-put-info/addOrderPut', {
             ...values
           }).then((r) => {
-            this.reset()
-            this.$emit('success')
+            this.$put('/cos/stock-alert-info', {id : this.rowId, status: 1, putNum: values.putNum}).then((r) => {
+              this.reset()
+              this.$emit('success')
+            })
           }).catch(() => {
             this.loading = false
           })
