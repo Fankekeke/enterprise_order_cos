@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cc.mrbird.febs.cos.dao.StoreRecordInfoMapper">
 
-    <!-- 分页获取库房记录信息 -->
+    <!-- 分页获取库房记录信息  -->
     <select id="selectStoreRecordPage" resultType="java.util.LinkedHashMap">
         select
         sri.id,
