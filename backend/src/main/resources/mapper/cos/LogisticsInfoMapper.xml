@@ -40,7 +40,7 @@
         <if test="logisticsInfo.userId != null and logisticsInfo.userId != ''">
             AND ui.user_id = #{logisticsInfo.userId}
         </if>
+        group by li.order_id
         order by li.create_date desc
-
     </select>
 </mapper>
