@@ -7,7 +7,7 @@
             <a-col :span="6">
               <a-card hoverable>
                 <a-row>
-                  <a-col :span="24" style="font-size: 13px;margin-bottom: 8px;font-family: SimHei">本月收益/元</a-col>
+                  <a-col :span="24" style="font-size: 13px;margin-bottom: 8px;font-family: SimHei">本月出库数量</a-col>
                   <a-col :span="4"><a-icon type="arrow-up" style="font-size: 30px;margin-top: 3px"/></a-col>
                   <a-col :span="18" style="font-size: 28px;font-weight: 500;font-family: SimHei">
                     {{ titleData.incomeMonth }}
@@ -19,7 +19,7 @@
             <a-col :span="6">
               <a-card hoverable>
                 <a-row>
-                  <a-col :span="24" style="font-size: 13px;margin-bottom: 8px;font-family: SimHei">本月工单</a-col>
+                  <a-col :span="24" style="font-size: 13px;margin-bottom: 8px;font-family: SimHei">本月出库收益</a-col>
                   <a-col :span="4"><a-icon type="arrow-up" style="font-size: 30px;margin-top: 3px"/></a-col>
                   <a-col :span="18" style="font-size: 28px;font-weight: 500;font-family: SimHei">
                     {{ titleData.workOrderMonth }}
@@ -31,7 +31,7 @@
             <a-col :span="6">
               <a-card hoverable>
                 <a-row>
-                  <a-col :span="24" style="font-size: 13px;margin-bottom: 8px;font-family: SimHei">本年收益/元</a-col>
+                  <a-col :span="24" style="font-size: 13px;margin-bottom: 8px;font-family: SimHei">本月入库数量</a-col>
                   <a-col :span="4"><a-icon type="arrow-up" style="font-size: 30px;margin-top: 3px"/></a-col>
                   <a-col :span="18" style="font-size: 28px;font-weight: 500;font-family: SimHei">
                     {{ titleData.incomeYear }}
@@ -43,7 +43,7 @@
             <a-col :span="6">
               <a-card hoverable>
                 <a-row>
-                  <a-col :span="24" style="font-size: 13px;margin-bottom: 8px;font-family: SimHei">本年工单</a-col>
+                  <a-col :span="24" style="font-size: 13px;margin-bottom: 8px;font-family: SimHei">本月入库支出</a-col>
                   <a-col :span="4"><a-icon type="arrow-up" style="font-size: 30px;margin-top: 3px"/></a-col>
                   <a-col :span="18" style="font-size: 28px;font-weight: 500;font-family: SimHei">
                     {{ titleData.workOrderYear }}
@@ -71,19 +71,73 @@
       </a-col>
     </a-row>
     <a-row style="margin-top: 15px" v-if="user.roleId == 74 || user.roleId == 76">
-<!--      <a-col :span="9">-->
-<!--        <a-card hoverable :bordered="false" style="width: 100%">-->
-<!--          <a-skeleton active v-if="loading" />-->
-<!--          <apexchart v-if="!loading" type="donut" height="270" :options="chartOptions2" :series="series2"></apexchart>-->
-<!--        </a-card>-->
-<!--      </a-col>-->
-<!--      <a-col :span="15">-->
-<!--        <a-card hoverable :bordered="false" style="width: 100%">-->
-<!--          <a-skeleton active v-if="loading" />-->
-<!--          <apexchart v-if="!loading" type="scatter" height="300" :options="chartOptions3" :series="series3"></apexchart>-->
-<!--        </a-card>-->
-<!--      </a-col>-->
+      <a-col :span="12">
+        <a-card hoverable :bordered="false" style="width: 100%">
+          <a-skeleton active v-if="loading" />
+          <apexchart  v-if="!loading" type="line" height="300" :options="chartOptions2" :series="series2"></apexchart>
+        </a-card>
+      </a-col>
+      <a-col :span="12">
+        <a-card hoverable :bordered="false" style="width: 100%">
+          <a-skeleton active v-if="loading" />
+          <apexchart v-if="!loading" type="bar" height="300" :options="chartOptions3" :series="series3"></apexchart>
+        </a-card>
+      </a-col>
     </a-row>
+    <a-col :span="24">
+      <div style="background: #ECECEC; padding: 30px;" v-if="user.roleId == 74 || user.roleId == 76">
+        <a-row :gutter="16">
+          <a-col :span="6">
+            <a-card hoverable>
+              <a-row>
+                <a-col :span="24" style="font-size: 13px;margin-bottom: 8px;font-family: SimHei">本年出库数量</a-col>
+                <a-col :span="4"><a-icon type="arrow-up" style="font-size: 30px;margin-top: 3px"/></a-col>
+                <a-col :span="18" style="font-size: 28px;font-weight: 500;font-family: SimHei">
+                  {{ titleData.incomeMonth }}
+                  <span style="font-size: 20px;margin-top: 3px">元</span>
+                </a-col>
+              </a-row>
+            </a-card>
+          </a-col>
+          <a-col :span="6">
+            <a-card hoverable>
+              <a-row>
+                <a-col :span="24" style="font-size: 13px;margin-bottom: 8px;font-family: SimHei">本年出库收益</a-col>
+                <a-col :span="4"><a-icon type="arrow-up" style="font-size: 30px;margin-top: 3px"/></a-col>
+                <a-col :span="18" style="font-size: 28px;font-weight: 500;font-family: SimHei">
+                  {{ titleData.workOrderMonth }}
+                  <span style="font-size: 20px;margin-top: 3px">单</span>
+                </a-col>
+              </a-row>
+            </a-card>
+          </a-col>
+          <a-col :span="6">
+            <a-card hoverable>
+              <a-row>
+                <a-col :span="24" style="font-size: 13px;margin-bottom: 8px;font-family: SimHei">本年入库数量</a-col>
+                <a-col :span="4"><a-icon type="arrow-up" style="font-size: 30px;margin-top: 3px"/></a-col>
+                <a-col :span="18" style="font-size: 28px;font-weight: 500;font-family: SimHei">
+                  {{ titleData.incomeYear }}
+                  <span style="font-size: 20px;margin-top: 3px">单</span>
+                </a-col>
+              </a-row>
+            </a-card>
+          </a-col>
+          <a-col :span="6">
+            <a-card hoverable>
+              <a-row>
+                <a-col :span="24" style="font-size: 13px;margin-bottom: 8px;font-family: SimHei">本年入库支出</a-col>
+                <a-col :span="4"><a-icon type="arrow-up" style="font-size: 30px;margin-top: 3px"/></a-col>
+                <a-col :span="18" style="font-size: 28px;font-weight: 500;font-family: SimHei">
+                  {{ titleData.workOrderYear }}
+                  <span style="font-size: 20px;margin-top: 3px">单</span>
+                </a-col>
+              </a-row>
+            </a-card>
+          </a-col>
+        </a-row>
+      </div>
+    </a-col>
     <a-row style="margin-top: 15px">
       <a-col :span="12">
         <a-card hoverable :loading="loading" :bordered="false" title="公告信息" style="margin-top: 15px">
@@ -205,65 +259,75 @@ export default {
           }
         }
       },
-      series2: [],
+      series2: [{
+        name: '收益',
+        data: []
+      }],
       chartOptions2: {
         chart: {
-          type: 'donut',
+          type: 'line',
           height: 300
         },
-        labels: ['整租', '合租'],
-        title: {
-          text: '工单服务类型统计',
-          align: 'left'
+        xaxis: {
+          categories: []
         },
-        responsive: [{
-          breakpoint: 380,
-          options: {
-            chart: {
-              width: 200
-            },
-            legend: {
-              position: 'bottom'
-            }
-          }
-        }]
-      },
-      series3: [{
-        name: 'SAMPLE A',
-        data: [
-          [16.4, 5.4], [21.7, 2], [25.4, 3], [19, 2], [10.9, 1], [13.6, 3.2], [10.9, 7.4], [10.9, 0], [10.9, 8.2], [16.4, 0], [16.4, 1.8], [13.6, 0.3], [13.6, 0], [29.9, 0], [27.1, 2.3], [16.4, 0], [13.6, 3.7], [10.9, 5.2], [16.4, 6.5], [10.9, 0], [24.5, 7.1], [10.9, 0], [8.1, 4.7], [19, 0], [21.7, 1.8], [27.1, 0], [24.5, 0], [27.1, 0], [29.9, 1.5], [27.1, 0.8], [22.1, 2]]
-      }, {
-        name: 'SAMPLE B',
-        data: [
-          [36.4, 13.4], [1.7, 11], [5.4, 8], [9, 17], [1.9, 4], [3.6, 12.2], [1.9, 14.4], [1.9, 9], [1.9, 13.2], [1.4, 7], [6.4, 8.8], [3.6, 4.3], [1.6, 10], [9.9, 2], [7.1, 15], [1.4, 0], [3.6, 13.7], [1.9, 15.2], [6.4, 16.5], [0.9, 10], [4.5, 17.1], [10.9, 10], [0.1, 14.7], [9, 10], [12.7, 11.8], [2.1, 10], [2.5, 10], [27.1, 10], [2.9, 11.5], [7.1, 10.8], [2.1, 12]]
-      }, {
-        name: 'SAMPLE C',
-        data: [
-          [21.7, 3], [23.6, 3.5], [24.6, 3], [29.9, 3], [21.7, 20], [23, 2], [10.9, 3], [28, 4], [27.1, 0.3], [16.4, 4], [13.6, 0], [19, 5], [22.4, 3], [24.5, 3], [32.6, 3], [27.1, 4], [29.6, 6], [31.6, 8], [21.6, 5], [20.9, 4], [22.4, 0], [32.6, 10.3], [29.7, 20.8], [24.5, 0.8], [21.4, 0], [21.7, 6.9], [28.6, 7.7], [15.4, 0], [18.1, 0], [33.4, 0], [16.4, 0]]
-      }],
-      chartOptions3: {
-        chart: {
-          height: 350,
-          type: 'scatter',
-          zoom: {
-            enabled: true,
-            type: 'xy'
-          }
+        stroke: {
+          curve: 'stepline'
+        },
+        dataLabels: {
+          enabled: false
         },
         title: {
           text: '近十天收入统计',
           align: 'left'
         },
-        xaxis: {
-          tickAmount: 10,
-          labels: {
-            formatter: function (val) {
-              return parseFloat(val).toFixed(1)
-            }
+        markers: {
+          hover: {
+            sizeOffset: 4
+          }
+        }
+      },
+      series4: [],
+      chartOptions4: {
+        chart: {
+          type: 'bar',
+          height: 300
+        },
+        title: {
+          text: '近十天工单统计',
+          align: 'left'
+        },
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            columnWidth: '55%'
           }
         },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          show: true,
+          width: 2,
+          colors: ['transparent']
+        },
+        xaxis: {
+          categories: []
+        },
         yaxis: {
-          tickAmount: 7
+          title: {
+            text: ''
+          }
+        },
+        fill: {
+          opacity: 1
+        },
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return val + ' 单'
+            }
+          }
         }
       }
     }
