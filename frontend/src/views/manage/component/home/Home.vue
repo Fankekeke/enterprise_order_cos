@@ -182,10 +182,14 @@ export default {
       },
       bulletinList: [],
       titleData: {
-        incomeMonth: 0,
-        workOrderMonth: 0,
-        incomeYear: 0,
-        workOrderYear: 0
+        monthOutNum: 0,
+        monthOutPrice: 0,
+        yearOutNum: 0,
+        yearOutPrice: 0,
+        monthPutNum: 0,
+        monthPutPrice: 0,
+        yearPutNum: 0,
+        yearPutPrice: 0
       },
       loading: false,
       series: [{
@@ -287,8 +291,8 @@ export default {
           }
         }
       },
-      series4: [],
-      chartOptions4: {
+      series3: [],
+      chartOptions3: {
         chart: {
           type: 'bar',
           height: 300
@@ -341,29 +345,30 @@ export default {
   },
   methods: {
     selectHomeData () {
-      this.$get('/cos/park-order-info/home/data', {roleId: this.user.roleId, userId: this.user.userId}).then((r) => {
-        let titleData = { staffNum: r.data.staffNum, totalRevenue: r.data.totalRevenue, totalOrderNum: r.data.totalOrderNum, roomNum: r.data.roomNum }
+      this.$get('/cos/order-info/homeData').then((r) => {
+        let titleData = { outNum: r.data.outNum, putNum: r.data.putNum, orderPrice: r.data.orderPrice, registerNum: r.data.registerNum }
         this.$emit('setTitle', titleData)
-        this.titleData.incomeMonth = r.data.incomeMonth
-        this.titleData.workOrderMonth = r.data.workOrderMonth
-        this.titleData.incomeYear = r.data.incomeYear
-        this.titleData.workOrderYear = r.data.workOrderYear
+        this.titleData.monthOutNum = r.data.monthOutNum
+        this.titleData.monthOutPrice = r.data.monthOutPrice
+        this.titleData.yearOutNum = r.data.yearOutNum
+        this.titleData.yearOutPrice = r.data.yearOutPrice
+
+        this.titleData.monthPutNum = r.data.monthPutNum
+        this.titleData.monthPutPrice = r.data.monthPutPrice
+        this.titleData.yearPutNum = r.data.yearPutNum
+        this.titleData.yearPutPrice = r.data.yearPutPrice
         this.bulletinList = r.data.bulletin
         let values = []
-        if (r.data.orderRecord !== null && r.data.orderRecord.length !== 0) {
+        if (r.data.orderNumWithinDays !== null && r.data.orderNumWithinDays.length !== 0) {
           if (this.chartOptions1.xaxis.categories.length === 0) {
-            this.chartOptions1.xaxis.categories = r.data.orderRecord.map(obj => { return obj.days })
+            this.chartOptions1.xaxis.categories = r.data.orderNumWithinDays.map(obj => { return obj.days })
           }
-          let itemData = { name: '订单数', data: r.data.orderRecord.map(obj => { return obj.count }) }
+          let itemData = { name: '出库统计', data: r.data.orderNumWithinDays.map(obj => { return obj.count }) }
           values.push(itemData)
           this.series1 = values
         }
-        this.series[0].data = r.data.paymentRecord.map(obj => { return obj.amount })
-        this.chartOptions.xaxis.categories = r.data.paymentRecord.map(obj => { return obj.days })
-        if (r.data.orderRate.length !== 0) {
-          this.series2 = r.data.orderRate.map(obj => { return obj.count })
-          this.chartOptions2.labels = r.data.orderRate.map(obj => { return obj.name })
-        }
+        this.series[0].data = r.data.orderPriceWithinDays.map(obj => { return obj.price })
+        this.chartOptions.xaxis.categories = r.data.orderPriceWithinDays.map(obj => { return obj.days })
       })
     }
   }
