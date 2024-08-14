@@ -53,6 +53,17 @@ public class UserInfoController {
     }
 
     /**
+     * 根据用户ID获取详情信息
+     *
+     * @param userId 用户ID
+     * @return 结果
+     */
+    @GetMapping("/selectDetailByUserId/{userId}")
+    public R selectDetailByUserId(@PathVariable Integer userId) {
+        return R.ok(userInfoService.selectUserDetail(userId));
+    }
+
+    /**
      * 查询用户信息详情
      *
      * @param id 主键ID

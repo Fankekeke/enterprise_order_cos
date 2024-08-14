@@ -369,6 +369,17 @@ export default {
         }
         this.series[0].data = r.data.orderPriceWithinDays.map(obj => { return obj.price })
         this.chartOptions.xaxis.categories = r.data.orderPriceWithinDays.map(obj => { return obj.days })
+
+        if (r.data.putNumWithinDays !== null && r.data.putNumWithinDays.length !== 0) {
+          if (this.chartOptions2.xaxis.categories.length === 0) {
+            this.chartOptions2.xaxis.categories = r.data.putNumWithinDays.map(obj => { return obj.days })
+          }
+          let itemData = { name: '出库统计', data: r.data.putNumWithinDays.map(obj => { return obj.count }) }
+          values.push(itemData)
+          this.series2 = values
+        }
+        this.series3[0].data = r.data.putPriceWithinDays.map(obj => { return obj.price })
+        this.chartOptions3.xaxis.categories = r.data.putPriceWithinDays.map(obj => { return obj.days })
       })
     }
   }
