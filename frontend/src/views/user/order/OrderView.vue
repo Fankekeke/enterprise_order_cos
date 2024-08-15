@@ -5,7 +5,7 @@
         关闭
       </a-button>
     </template>
-    <div style="font-size: 13px;font-family: SimHei" v-if="orderData !== null">
+    <div style="font-size: 13px;font-family: SimHei" v-if="orderDetailInfo !== null">
       <div style="padding-left: 24px;padding-right: 24px;margin-bottom: 50px;margin-top: 50px">
         <a-steps :current="current" progress-dot size="small">
           <a-step title="待付款" />
@@ -15,50 +15,105 @@
         </a-steps>
       </div>
       <a-row style="padding-left: 24px;padding-right: 24px;">
-        <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">基础信息</span></a-col>
+        <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">订单信息</span></a-col>
         <a-col :span="8"><b>工单编号：</b>
-          {{ orderData.code }}
+          {{ orderDetailInfo.order.code }}
         </a-col>
-        <a-col :span="8"><b>客户名称：</b>
-          {{ orderData.name ? orderData.name : '- -' }}
+        <a-col :span="8"><b>总价格：</b>
+          {{ orderDetailInfo.totalPrice ? orderDetailInfo.totalPrice : '- -' }} 元
         </a-col>
         <a-col :span="8"><b>联系方式：</b>
-          {{ orderData.phone ? orderData.phone : '- -' }}
+          <span v-if="orderDetailInfo.type == 0">正常订单</span>
+          <span v-if="orderDetailInfo.type == 1">预付款</span>
         </a-col>
       </a-row>
       <br/>
       <a-row style="padding-left: 24px;padding-right: 24px;">
-        <a-col :span="8"><b>当前状态：</b>
-          <span v-if="orderData.orderStatus == 0">待付款</span>
-          <span v-if="orderData.orderStatus == 1">已下单</span>
-          <span v-if="orderData.orderStatus == 2">配送中</span>
-          <span v-if="orderData.orderStatus == 3">已收货</span>
+        <a-col :span="8"><b>订单状态：</b>
+          <span v-if="orderDetailInfo.status == 0">待付款</span>
+          <span v-if="orderDetailInfo.status == 1">已下单</span>
+          <span v-if="orderDetailInfo.status == 2">配送中</span>
+          <span v-if="orderDetailInfo.status == 3">已收货</span>
+          <span v-if="orderDetailInfo.status == 4">已收货</span>
+          <span v-if="orderDetailInfo.status == 5">已收货</span>
         </a-col>
-        <a-col :span="8"><b>订单金额：</b>
-          {{ orderData.totalCost }} 元
+        <a-col :span="8"><b>预付款金额：</b>
+          {{ orderDetailInfo.subsistPrice ? orderDetailInfo.subsistPrice : '- -' }} 元
         </a-col>
+        <a-col :span="8"><b>欠款金额：</b>
+          {{ orderDetailInfo.owePrice ? orderDetailInfo.owePrice : '- -' }} 元
+        </a-col>
+      </a-row>
+      <br/>
+      <a-row style="padding-left: 24px;padding-right: 24px;">
         <a-col :span="8"><b>下单时间：</b>
-          {{ orderData.createDate }}
+          {{ orderDetailInfo.createDate ? orderDetailInfo.createDate : '- -' }}
+        </a-col>
+        <a-col :span="8"><b>支付时间：</b>
+          {{ orderDetailInfo.payDate ? orderDetailInfo.payDate : '- -' }}
+        </a-col>
+        <a-col :span="8"><b>尾款支付时间：</b>
+          {{ orderDetailInfo.oweDate ? orderDetailInfo.oweDate : '- -' }}
         </a-col>
       </a-row>
       <br/>
       <a-row style="padding-left: 24px;padding-right: 24px;">
-        <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">医院信息</span></a-col>
-        <a-col :span="8"><b>医院名称：</b>
-            {{ orderData.pharmacyName }}
+        <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">用户信息</span></a-col>
+        <a-col :span="8"><b>用户名称：</b>
+            {{ orderDetailInfo.user.name }}
           </a-col>
         <a-col :span="8"><b>医院地址：</b>
-          {{ orderData.address }}
+          <span v-if="orderDetailInfo.user.type == 1">经销商</span>
+          <span v-if="orderDetailInfo.user.type == 2">批发商</span>
+          <span v-if="orderDetailInfo.user.type == 3">散客</span>
+          <span v-if="orderDetailInfo.user.type == 4">代理商</span>
         </a-col>
-        <a-col :span="8"><b>联系方式：</b>
-          {{ orderData.pharmacyPhone }}
+        <a-col :span="8"><b>联系人：</b>
+          {{ orderDetailInfo.user.contact }}
         </a-col>
       </a-row>
       <br/>
       <a-row style="padding-left: 24px;padding-right: 24px;">
-        <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">购买药品信息</span></a-col>
+        <a-col :span="8"><b>用户联系方式：</b>
+          {{ orderDetailInfo.user.phone }}
+        </a-col>
+        <a-col :span="8"><b>用户注册时间：</b>
+          {{ orderDetailInfo.user.createDate }}
+        </a-col>
+      </a-row>
+      <br/>
+      <a-row style="padding-left: 24px;padding-right: 24px;">
+        <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">收货地址</span></a-col>
+        <a-col :span="8"><b>省份：</b>
+          {{ orderDetailInfo.user.province }}
+        </a-col>
+        <a-col :span="8"><b>城市：</b>
+          {{ orderDetailInfo.user.city }}
+        </a-col>
+        <a-col :span="8"><b>区：</b>
+          {{ orderDetailInfo.user.area }}
+        </a-col>
+      </a-row>
+      <br/>
+      <a-row style="padding-left: 24px;padding-right: 24px;">
+        <a-col :span="8"><b>联系方式：</b>
+          {{ orderDetailInfo.user.phone }}
+        </a-col>
+        <a-col :span="8"><b>联系人：</b>
+          {{ orderDetailInfo.user.contact }}
+        </a-col>
+      </a-row>
+      <br/>
+      <a-row style="padding-left: 24px;padding-right: 24px;">
+        <a-col :span="24"><b>详细地址：</b>
+          {{ orderDetailInfo.user.address }}
+        </a-col>
+      </a-row>
+      <br/>
+      <a-row style="padding-left: 24px;padding-right: 24px;">
+        <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">购买商品信息</span></a-col>
          <a-col :span="24">
-          <a-table :columns="columns" :data-source="durgList">
+          <a-table :columns="columns" :data-source="orderDetailInfo.detail">
           </a-table>
         </a-col>
       </a-row>
@@ -66,7 +121,7 @@
       <a-row style="padding-left: 24px;padding-right: 24px;">
         <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">当前物流</span></a-col>
          <a-col :span="24">
-          <a-table :columns="logisticsColumns" :data-source="logisticsList">
+          <a-table :columns="logisticsColumns" :data-source="orderDetailInfo.logistics">
           </a-table>
         </a-col>
       </a-row>
@@ -106,16 +161,13 @@ export default {
     },
     columns () {
       return [{
-        title: '药品名称',
-        dataIndex: 'drugName'
+        title: '商品名称',
+        dataIndex: 'name'
       }, {
-        title: '品牌',
-        dataIndex: 'brand'
+        title: '型号',
+        dataIndex: 'model'
       }, {
-        title: '数量',
-        dataIndex: 'quantity'
-      }, {
-        title: '药品图片',
+        title: '商品图片',
         dataIndex: 'images',
         customRender: (text, record, index) => {
           if (!record.images) return <a-avatar shape="square" icon="user" />
@@ -127,8 +179,35 @@ export default {
           </a-popover>
         }
       }, {
+        title: '数量',
+        dataIndex: 'num',
+        customRender: (text, row, index) => {
+          if (text !== null) {
+            return text
+          } else {
+            return '- -'
+          }
+        }
+      }, {
         title: '单价',
-        dataIndex: 'unitPrice'
+        dataIndex: 'price',
+        customRender: (text, row, index) => {
+          if (text !== null) {
+            return text
+          } else {
+            return '- -'
+          }
+        }
+      }, {
+        title: '总金额',
+        dataIndex: 'totalPrice',
+        customRender: (text, row, index) => {
+          if (text !== null) {
+            return text
+          } else {
+            return '- -'
+          }
+        }
       }]
     },
     logisticsColumns () {
@@ -151,26 +230,22 @@ export default {
       reserveInfo: null,
       durgList: [],
       logisticsList: [],
-      current: 0
+      current: 0,
+      orderDetailInfo: null
     }
   },
   watch: {
     orderShow: function (value) {
       if (value) {
         this.dataInit(this.orderData.id)
-        this.current = this.orderData.orderStatus
+        this.current = this.orderData.status
       }
     }
   },
   methods: {
     dataInit (orderId) {
-      // 药品信息
-      this.$get(`/cos/order-detail/detail/${orderId}`).then((r) => {
-        this.durgList = r.data.data
-      })
-      // 物流信息
-      this.$get(`/cos/logistics-info/order/${orderId}`).then((r) => {
-        this.logisticsList = r.data.data
+      this.$get(`/cos/order-info/detail/${orderId}`).then((r) => {
+        this.orderDetailInfo = r.data
       })
     },
     imagesInit (images) {

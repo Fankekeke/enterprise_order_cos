@@ -82,22 +82,11 @@
       :orderAuditShow="orderAuditView.visiable"
       :orderAuditData="orderAuditView.data">
     </order-audit>
-    <order-status
-      @close="handleorderStatusViewClose"
-      @success="handleorderStatusViewSuccess"
-      :orderStatusShow="orderStatusView.visiable"
-      :orderStatusData="orderStatusView.data">
-    </order-status>
     <order-view
       @close="handleorderViewClose"
       :orderShow="orderView.visiable"
       :orderData="orderView.data">
     </order-view>
-    <order-add
-      @close="handleorderAddClose"
-      @success="handleorderAddSuccess"
-      :orderAddShow="orderAdd.visiable">
-    </order-add>
   </a-card>
 </template>
 
@@ -105,10 +94,8 @@
 import RangeDate from '@/components/datetime/RangeDate'
 import {mapState} from 'vuex'
 import moment from 'moment'
-import OrderAdd from './OrderAdd'
 import OrderAudit from './OrderAudit'
 import OrderView from './OrderView'
-import OrderStatus from './OrderStatus.vue'
 moment.locale('zh-cn')
 
 export default {
@@ -163,12 +150,37 @@ export default {
         dataIndex: 'code'
       }, {
         title: '客户名称',
-        dataIndex: 'name',
+        dataIndex: 'userName',
         customRender: (text, row, index) => {
           if (text !== null) {
             return text
           } else {
-            return <a-tag>平台内下单</a-tag>
+            return '- -'
+          }
+        }
+      }, {
+        title: '用户头像',
+        dataIndex: 'images',
+        customRender: (text, record, index) => {
+          if (!record.images) return <a-avatar shape="square" icon="user" />
+          return <a-popover>
+            <template slot="content">
+              <a-avatar shape="square" size={132} icon="user" src={ 'http://127.0.0.1:9527/imagesWeb/' + record.images.split(',')[0] } />
+            </template>
+            <a-avatar shape="square" icon="user" src={ 'http://127.0.0.1:9527/imagesWeb/' + record.images.split(',')[0] } />
+          </a-popover>
+        }
+      }, {
+        title: '订单类型',
+        dataIndex: 'type',
+        customRender: (text, row, index) => {
+          switch (text) {
+            case 0:
+              return <a-tag>正常订单</a-tag>
+            case 1:
+              return <a-tag color="pink">预付款</a-tag>
+            default:
+              return '- -'
           }
         }
       }, {
@@ -183,7 +195,7 @@ export default {
         }
       }, {
         title: '订单总额',
-        dataIndex: 'totalCost',
+        dataIndex: 'totalPrice',
         customRender: (text, row, index) => {
           if (text !== null) {
             return text + '元'
@@ -192,18 +204,8 @@ export default {
           }
         }
       }, {
-        title: '收获地址',
-        dataIndex: 'userAddress',
-        customRender: (text, row, index) => {
-          if (text !== null) {
-            return text
-          } else {
-            return '- -'
-          }
-        }
-      }, {
-        title: '所属医院',
-        dataIndex: 'pharmacyName',
+        title: '收货地址',
+        dataIndex: 'address',
         customRender: (text, row, index) => {
           if (text !== null) {
             return text
@@ -213,17 +215,21 @@ export default {
         }
       }, {
         title: '订单状态',
-        dataIndex: 'orderStatus',
+        dataIndex: 'status',
         customRender: (text, row, index) => {
           switch (text) {
             case 0:
-              return <a-tag>待付款</a-tag>
+              return <a-tag>待支付</a-tag>
             case 1:
-              return <a-tag>已下单</a-tag>
+              return <a-tag>预付款已缴</a-tag>
             case 2:
-              return <a-tag>配送中</a-tag>
+              return <a-tag>尾款已缴</a-tag>
             case 3:
-              return <a-tag>已收货</a-tag>
+              return <a-tag>已支付</a-tag>
+            case 4:
+              return <a-tag>已出库</a-tag>
+            case 5:
+              return <a-tag>已签收</a-tag>
             default:
               return '- -'
           }
