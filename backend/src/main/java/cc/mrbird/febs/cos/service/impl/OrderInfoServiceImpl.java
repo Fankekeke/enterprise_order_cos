@@ -291,7 +291,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         // 商品信息
         Set<String> commodityCodeList = recordInfoMap.keySet();
-        List<CommodityInfo> commodityInfoList = commodityInfoService.list(Wrappers.<CommodityInfo>lambdaQuery().in(CommodityInfo::getCode, commodityCodeList));
+        List<CommodityInfo> commodityInfoList = commodityInfoService.list(Wrappers.<CommodityInfo>lambdaQuery().in(CollectionUtil.isNotEmpty(commodityCodeList), CommodityInfo::getCode, commodityCodeList));
         Map<String, CommodityInfo> commodityMap = commodityInfoList.stream().collect(Collectors.toMap(CommodityInfo::getCode, e -> e));
 
         recordInfoMap.forEach((key, value) -> {
