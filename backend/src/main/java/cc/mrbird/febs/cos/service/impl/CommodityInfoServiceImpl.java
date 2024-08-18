@@ -1,13 +1,11 @@
 package cc.mrbird.febs.cos.service.impl;
 
-import cc.mrbird.febs.cos.entity.CommodityInfo;
+import cc.mrbird.febs.cos.entity.*;
 import cc.mrbird.febs.cos.dao.CommodityInfoMapper;
-import cc.mrbird.febs.cos.entity.CommodityRebateInfo;
-import cc.mrbird.febs.cos.entity.UserInfo;
-import cc.mrbird.febs.cos.service.ICommodityInfoService;
-import cc.mrbird.febs.cos.service.ICommodityRebateInfoService;
-import cc.mrbird.febs.cos.service.IUserInfoService;
+import cc.mrbird.febs.cos.service.*;
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -17,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -35,6 +34,10 @@ public class CommodityInfoServiceImpl extends ServiceImpl<CommodityInfoMapper, C
     private final ICommodityRebateInfoService commodityRebateInfoService;
 
     private final IUserInfoService userInfoService;
+
+    private final IStoreRecordInfoService storeRecordInfoService;
+
+    private final ICommodityTypeService commodityTypeService;
 
     /**
      * 分页获取商品信息
@@ -59,25 +62,39 @@ public class CommodityInfoServiceImpl extends ServiceImpl<CommodityInfoMapper, C
         // 商品信息
         List<CommodityInfo> commodityInfoList = this.list(Wrappers.<CommodityInfo>lambdaQuery()
                 .like(StrUtil.isNotEmpty(commodityInfo.getName()), CommodityInfo::getName, commodityInfo.getName()));
+        List<String> commodityCodeList = commodityInfoList.stream().map(CommodityInfo::getCode).collect(Collectors.toList());
 
         // 商品折扣
         List<CommodityRebateInfo> rebateInfoList = commodityRebateInfoService.list();
         Map<Integer, CommodityRebateInfo> rebateMap = rebateInfoList.stream().collect(Collectors.toMap(CommodityRebateInfo::getCommodityId, e -> e));
 
+        // 商品类型
+        List<CommodityType> commodityTypeList = commodityTypeService.list();
+        Map<Integer, String> commodityTypeMap = commodityTypeList.stream().collect(Collectors.toMap(CommodityType::getId, CommodityType::getName));
+
         // 获取用户信息计算注册时常
         UserInfo user = userInfoService.getOne(Wrappers.<UserInfo>lambdaQuery().eq(UserInfo::getUserId, commodityInfo.getUserId()));
-        long month = DateUtil.betweenMonth(DateUtil.parseDate(user.getCreateDate()), new Date(), true);
+//        long month = DateUtil.betweenMonth(DateUtil.parseDate(user.getCreateDate()), new Date(), true);
+
+        // 商品库存
+        List<StoreRecordInfo> recordInfoList = storeRecordInfoService.list(Wrappers.<StoreRecordInfo>lambdaQuery().in(CollectionUtil.isNotEmpty(commodityCodeList), StoreRecordInfo::getCommodityCode, commodityCodeList)
+                .eq(StoreRecordInfo::getType, 0));
+        Map<String, Integer> recordInfoMap = recordInfoList.stream().collect(Collectors.toMap(StoreRecordInfo::getCommodityCode, StoreRecordInfo::getNum));
 
         for (CommodityInfo commodity : commodityInfoList) {
+            // 商品类型
+            commodity.setTypeName(commodityTypeMap.get(commodity.getTypeId()));
             // 获取此商品折扣信息
             CommodityRebateInfo rebateInfo = rebateMap.get(commodity.getId());
+            commodity.setReserve(recordInfoMap.get(commodity.getCode()));
             if (rebateInfo == null) {
                 continue;
             }
-            if (month >= rebateInfo.getLowRestriction()) {
-                commodity.setSellPrice(rebateInfo.getLowRate());
-            } else if (month >= rebateInfo.getSpecialRestriction()) {
+
+            if (user.getPrice().compareTo(rebateInfo.getSpecialRestriction()) > 0) {
                 commodity.setSellPrice(rebateInfo.getSpecialPrice());
+            } else if (user.getPrice().compareTo(rebateInfo.getLowRestriction()) > 0) {
+                commodity.setSellPrice(rebateInfo.getLowRate());
             }
         }
         return commodityInfoList;

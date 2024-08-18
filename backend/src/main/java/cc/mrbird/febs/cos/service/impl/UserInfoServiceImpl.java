@@ -1,9 +1,12 @@
 package cc.mrbird.febs.cos.service.impl;
 
+import cc.mrbird.febs.cos.dao.OrderInfoMapper;
+import cc.mrbird.febs.cos.entity.AddressInfo;
 import cc.mrbird.febs.cos.entity.LogisticsInfo;
 import cc.mrbird.febs.cos.entity.OrderInfo;
 import cc.mrbird.febs.cos.entity.UserInfo;
 import cc.mrbird.febs.cos.dao.UserInfoMapper;
+import cc.mrbird.febs.cos.service.IAddressInfoService;
 import cc.mrbird.febs.cos.service.ILogisticsInfoService;
 import cc.mrbird.febs.cos.service.IOrderInfoService;
 import cc.mrbird.febs.cos.service.IUserInfoService;
@@ -32,9 +35,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> implements IUserInfoService {
 
-    private IOrderInfoService orderInfoService;
+    private final OrderInfoMapper orderInfoMapper;
 
-    private ILogisticsInfoService logisticsInfoService;
+    private final ILogisticsInfoService logisticsInfoService;
+
+    private final IAddressInfoService addressInfoService;
 
     /**
      * 分页获取用户信息
@@ -70,7 +75,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
         result.put("user", userInfo);
         // 用户订单信息
-        List<OrderInfo> orderInfoList = orderInfoService.list(Wrappers.<OrderInfo>lambdaQuery().eq(OrderInfo::getUserId, userInfo.getId()));
+        List<OrderInfo> orderInfoList = orderInfoMapper.selectList(Wrappers.<OrderInfo>lambdaQuery().eq(OrderInfo::getUserId, userInfo.getId()));
         if (CollectionUtil.isEmpty(orderInfoList)) {
             return result;
         }
@@ -94,6 +99,35 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             orderInfo.setAddress(logisticsMap.get(orderInfo.getId()));
         }
         result.put("order", notCheckOrder);
+        return result;
+    }
+
+    /**
+     * 查询用户信息详情【用户地址】
+     *
+     * @param userId 主键ID
+     * @return 结果
+     */
+    @Override
+    public LinkedHashMap<String, Object> selectAddressDetail(Integer userId) {
+        // 返回数据
+        LinkedHashMap<String, Object> result = new LinkedHashMap<String, Object>() {
+            {
+                put("user", null);
+                put("default", null);
+                put("address", Collections.emptyList());
+            }
+        };
+        UserInfo userInfo = this.getOne(Wrappers.<UserInfo>lambdaQuery().eq(UserInfo::getUserId, userId));
+        if (userInfo == null) {
+            return result;
+        }
+        result.put("user", userInfo);
+
+        // 用户地址
+        List<AddressInfo> addressInfoList = addressInfoService.list(Wrappers.<AddressInfo>lambdaQuery().eq(AddressInfo::getUserId, userInfo.getId()));
+        result.put("address", addressInfoList);
+        result.put("default", CollectionUtil.isEmpty(addressInfoList) ? null : addressInfoList.stream().filter(e -> "1".equals(e.getDefaultFlag())).collect(Collectors.toList()).get(0));
         return result;
     }
 }

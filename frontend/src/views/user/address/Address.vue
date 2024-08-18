@@ -56,13 +56,13 @@
             </a-tooltip>
           </template>
         </template>
-        <template slot="contentShow" slot-scope="text, record">
+        <template slot="addressShow" slot-scope="text, record">
           <template>
             <a-tooltip>
               <template slot="title">
-                {{ record.content }}
+                {{ record.address }}
               </template>
-              {{ record.content.slice(0, 40) }} ...
+              {{ record.address.slice(0, 10) }} ...
             </a-tooltip>
           </template>
         </template>
@@ -166,24 +166,12 @@ export default {
         title: '地址编号',
         dataIndex: 'code'
       }, {
-        title: '省份',
-        dataIndex: 'province'
-      }, {
-        title: '市',
-        dataIndex: 'city'
-      }, {
         title: '区',
         dataIndex: 'area'
       }, {
         title: '详细地址',
         dataIndex: 'address',
-        customRender: (text, row, index) => {
-          if (text !== null) {
-            return text
-          } else {
-            return '- -'
-          }
-        }
+        scopedSlots: {customRender: 'addressShow'}
       }, {
         title: '默认地址',
         dataIndex: 'defaultFlag',

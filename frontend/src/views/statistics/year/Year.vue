@@ -394,6 +394,13 @@ export default {
         this.series2[0].data = r.data.outlayPriceList
         this.series3[0].data = r.data.outlayNumList
 
+        this.series4 = []
+        this.chartOptions4.labels = []
+        let saleTypeRankMapCopy = r.data.saleTypeRankMapCopy
+        for (let key in saleTypeRankMapCopy) {
+          this.series4.push(saleTypeRankMapCopy[key])
+          this.chartOptions4.labels.push(key)
+        }
         setTimeout(() => {
           this.chartLoading = false
         }, 200)

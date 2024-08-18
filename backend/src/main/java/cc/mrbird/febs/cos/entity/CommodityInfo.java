@@ -80,6 +80,12 @@ public class CommodityInfo implements Serializable {
     private String createDate;
 
     /**
+     * 库房库存
+     */
+    @TableField(exist = false)
+    private Integer reserve;
+
+    /**
      * 商品类型
      */
     @TableField(exist = false)

@@ -52,8 +52,8 @@ public class CommodityRebateInfoServiceImpl extends ServiceImpl<CommodityRebateI
         commodityRebate.setNormalPrice(price);
         commodityRebate.setSpecialPrice(price);
 
-        commodityRebate.setLowRestriction(0);
-        commodityRebate.setSpecialRestriction(0);
+        commodityRebate.setLowRestriction(BigDecimal.ZERO);
+        commodityRebate.setSpecialRestriction(BigDecimal.ZERO);
         commodityRebate.setCreateDate(DateUtil.formatDateTime(new Date()));
         return this.save(commodityRebate);
     }

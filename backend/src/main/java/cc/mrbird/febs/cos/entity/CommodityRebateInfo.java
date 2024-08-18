@@ -67,12 +67,12 @@ public class CommodityRebateInfo implements Serializable {
     /**
      * 底价限制（月）
      */
-    private Integer lowRestriction;
+    private BigDecimal lowRestriction;
 
     /**
      * 特价限制（月）
      */
-    private Integer specialRestriction;
+    private BigDecimal specialRestriction;
 
     /**
      * 商品名称
