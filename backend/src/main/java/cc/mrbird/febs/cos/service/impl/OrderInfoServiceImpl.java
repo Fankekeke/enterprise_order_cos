@@ -8,6 +8,7 @@ import cc.mrbird.febs.cos.entity.*;
 import cc.mrbird.febs.cos.dao.OrderInfoMapper;
 import cc.mrbird.febs.cos.service.*;
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
@@ -329,12 +330,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
     /**
      * 月统计订单及收益
      *
-     * @param date 日期
+     * @param dateStr 日期
      * @return 结果
      */
     @Override
-    public LinkedHashMap<String, Object> selectStoreStatisticsByMonth(String date) {
-        date = date + "-01";
+    public LinkedHashMap<String, Object> selectStoreStatisticsByMonth(String dateStr) {
+        String date = dateStr + "-01";
         // 返回数据
         LinkedHashMap<String, Object> result = new LinkedHashMap<>();
 
@@ -366,8 +367,12 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         List<Integer> outlayNumList = new ArrayList<>();
         List<BigDecimal> outlayPriceList = new ArrayList<>();
         int days = DateUtil.getLastDayOfMonth(DateUtil.parseDate(date));
-        for (int i = 1; i <= days; i++) {
 
+        // 本月日期
+        List<String> dateTimeList = new ArrayList<>();
+
+        for (int i = 1; i <= days; i++) {
+            dateTimeList.add(month + "月" + i + "日");
             // 本天出库
             List<OrderOutInfo> currentDayOutList = orderOutDayMap.get(i);
             if (CollectionUtil.isEmpty(currentDayOutList)) {
@@ -400,6 +405,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         // 本月内入库量统计
         result.put("outlayNumList", outlayNumList);
 
+        result.put("dateList", dateTimeList);
         // 商品销量排行
         List<LinkedHashMap<String, Object>> saleRank = new ArrayList<>();
         List<LinkedHashMap<String, Object>> salePriceRank = new ArrayList<>();
@@ -411,7 +417,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
 
         // 商品信息
         Set<String> commodityCodeList = recordInfoMap.keySet();
-        List<CommodityInfo> commodityInfoList = commodityInfoService.list(Wrappers.<CommodityInfo>lambdaQuery().in(CommodityInfo::getCode, commodityCodeList));
+        List<CommodityInfo> commodityInfoList = commodityInfoService.list(Wrappers.<CommodityInfo>lambdaQuery().in(CollectionUtil.isNotEmpty(commodityCodeList), CommodityInfo::getCode, commodityCodeList));
         Map<String, CommodityInfo> commodityMap = commodityInfoList.stream().collect(Collectors.toMap(CommodityInfo::getCode, e -> e));
 
         recordInfoMap.forEach((key, value) -> {

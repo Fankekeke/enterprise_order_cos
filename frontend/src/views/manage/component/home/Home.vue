@@ -139,7 +139,7 @@
       </div>
     </a-col>
     <a-row style="margin-top: 15px">
-      <a-col :span="12">
+      <a-col :span="24">
         <a-card hoverable :loading="loading" :bordered="false" title="公告信息" style="margin-top: 15px">
           <div style="padding: 0 22px">
             <a-list item-layout="vertical" :pagination="pagination" :data-source="bulletinList">

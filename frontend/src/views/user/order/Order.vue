@@ -47,8 +47,8 @@
     </div>
     <div>
       <div class="operator">
-        <a-button type="primary" ghost @click="add">添加订单</a-button>
-        <a-button @click="batchDelete">删除</a-button>
+<!--        <a-button type="primary" ghost @click="add">添加订单</a-button>-->
+<!--        <a-button @click="batchDelete">删除</a-button>-->
       </div>
       <!-- 表格区域 -->
       <a-table ref="TableInfo"
@@ -147,7 +147,8 @@ export default {
     columns () {
       return [{
         title: '订单编号',
-        dataIndex: 'code'
+        dataIndex: 'code',
+        ellipsis: true
       }, {
         title: '客户名称',
         dataIndex: 'userName',
@@ -175,9 +176,9 @@ export default {
         dataIndex: 'type',
         customRender: (text, row, index) => {
           switch (text) {
-            case 0:
+            case '0':
               return <a-tag>正常订单</a-tag>
-            case 1:
+            case '1':
               return <a-tag color="pink">预付款</a-tag>
             default:
               return '- -'
@@ -212,23 +213,24 @@ export default {
           } else {
             return '- -'
           }
-        }
+        },
+        ellipsis: true
       }, {
         title: '订单状态',
         dataIndex: 'status',
         customRender: (text, row, index) => {
           switch (text) {
-            case 0:
+            case '0':
               return <a-tag>待支付</a-tag>
-            case 1:
+            case '1':
               return <a-tag>预付款已缴</a-tag>
-            case 2:
+            case '2':
               return <a-tag>尾款已缴</a-tag>
-            case 3:
+            case '3':
               return <a-tag>已支付</a-tag>
-            case 4:
+            case '4':
               return <a-tag>已出库</a-tag>
-            case 5:
+            case '5':
               return <a-tag>已签收</a-tag>
             default:
               return '- -'
@@ -243,7 +245,8 @@ export default {
           } else {
             return '- -'
           }
-        }
+        },
+        ellipsis: true
       }, {
         title: '操作',
         dataIndex: 'operation',

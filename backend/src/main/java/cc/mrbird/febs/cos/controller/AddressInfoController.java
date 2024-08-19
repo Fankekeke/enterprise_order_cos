@@ -77,7 +77,7 @@ public class AddressInfoController {
         // 创建时间
         addressInfo.setCreateDate(DateUtil.formatDateTime(new Date()));
         // 获取用户信息
-        UserInfo user = userInfoService.getById(addressInfo.getUserId());
+        UserInfo user = userInfoService.getOne(Wrappers.<UserInfo>lambdaQuery().eq(UserInfo::getUserId, addressInfo.getUserId()));
         if (user != null) {
             addressInfo.setUserId(user.getId());
         }

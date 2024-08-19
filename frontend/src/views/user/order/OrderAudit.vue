@@ -1,5 +1,5 @@
 <template>
-  <a-modal v-model="show" title="订单处理" @cancel="onClose" :width="800">
+  <a-modal v-model="show" title="订单处理" @cancel="onClose" :width="1000">
     <template slot="footer">
       <a-button key="back" @click="submit" type="primary">
         发货
@@ -8,59 +8,128 @@
         关闭
       </a-button>
     </template>
-    <div style="font-size: 13px;font-family: SimHei" v-if="orderAuditData !== null">
+    <div style="font-size: 13px;font-family: SimHei" v-if="orderDetailInfo !== null">
+      <div style="padding-left: 24px;padding-right: 24px;margin-bottom: 50px;margin-top: 50px">
+        <a-steps :current="current" progress-dot size="small">
+          <a-step title="待付款" />
+          <a-step title="已下单" />
+          <a-step title="配送中" />
+          <a-step title="已收货" />
+        </a-steps>
+      </div>
       <a-row style="padding-left: 24px;padding-right: 24px;">
-        <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">基础信息</span></a-col>
+        <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">订单信息</span></a-col>
         <a-col :span="8"><b>工单编号：</b>
-          {{ orderAuditData.code }}
+          {{ orderDetailInfo.order.code }}
         </a-col>
-        <a-col :span="8"><b>客户名称：</b>
-          {{ orderAuditData.userName }}
+        <a-col :span="8"><b>总价格：</b>
+          {{ orderDetailInfo.totalPrice ? orderDetailInfo.totalPrice : '- -' }} 元
         </a-col>
         <a-col :span="8"><b>联系方式：</b>
-          {{ orderAuditData.phone }}
+          <span v-if="orderDetailInfo.order.type == 0">正常订单</span>
+          <span v-if="orderDetailInfo.order.type == 1">预付款</span>
         </a-col>
       </a-row>
       <br/>
       <a-row style="padding-left: 24px;padding-right: 24px;">
-        <a-col :span="8"><b>当前状态：</b>
-          <span v-if="orderAuditData.status == 0">待付款</span>
-          <span v-if="orderAuditData.status == 1">已下单</span>
-          <span v-if="orderAuditData.status == 2">配送中</span>
-          <span v-if="orderAuditData.status == 3">已收货</span>
+        <a-col :span="8"><b>订单状态：</b>
+          <span v-if="orderDetailInfo.order.status == 0">待付款</span>
+          <span v-if="orderDetailInfo.order.status == 1">已下单</span>
+          <span v-if="orderDetailInfo.order.status == 2">配送中</span>
+          <span v-if="orderDetailInfo.order.status == 3">已收货</span>
+          <span v-if="orderDetailInfo.order.status == 4">已收货</span>
+          <span v-if="orderDetailInfo.order.status == 5">已收货</span>
         </a-col>
-        <a-col :span="8"><b>订单金额：</b>
-          {{ orderAuditData.totalCost }} 元
+        <a-col :span="8"><b>预付款金额：</b>
+          {{ orderDetailInfo.order.subsistPrice ? orderDetailInfo.order.subsistPrice : '- -' }} 元
         </a-col>
+        <a-col :span="8"><b>欠款金额：</b>
+          {{ orderDetailInfo.order.owePrice ? orderDetailInfo.order.owePrice : '- -' }} 元
+        </a-col>
+      </a-row>
+      <br/>
+      <a-row style="padding-left: 24px;padding-right: 24px;">
         <a-col :span="8"><b>下单时间：</b>
-          {{ orderAuditData.createDate }}
+          {{ orderDetailInfo.order.createDate ? orderDetailInfo.order.createDate : '- -' }}
+        </a-col>
+        <a-col :span="8"><b>支付时间：</b>
+          {{ orderDetailInfo.order.payDate ? orderDetailInfo.order.payDate : '- -' }}
+        </a-col>
+        <a-col :span="8"><b>尾款支付时间：</b>
+          {{ orderDetailInfo.order.oweDate ? orderDetailInfo.order.oweDate : '- -' }}
         </a-col>
       </a-row>
       <br/>
+      <br/>
       <a-row style="padding-left: 24px;padding-right: 24px;">
-        <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">医院信息</span></a-col>
-        <a-col :span="8"><b>医院名称：</b>
-            {{ orderAuditData.pharmacyName }}
-          </a-col>
+        <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">用户信息</span></a-col>
+        <a-col :span="8"><b>用户名称：</b>
+          {{ orderDetailInfo.user.name }}
+        </a-col>
         <a-col :span="8"><b>医院地址：</b>
-          {{ orderAuditData.address }}
+          <span v-if="orderDetailInfo.user.type == 1">经销商</span>
+          <span v-if="orderDetailInfo.user.type == 2">批发商</span>
+          <span v-if="orderDetailInfo.user.type == 3">散客</span>
+          <span v-if="orderDetailInfo.user.type == 4">代理商</span>
         </a-col>
-        <a-col :span="8"><b>联系方式：</b>
-          {{ orderAuditData.pharmacyPhone }}
+        <a-col :span="8"><b>联系人：</b>
+          {{ orderDetailInfo.user.contact }}
         </a-col>
       </a-row>
       <br/>
       <a-row style="padding-left: 24px;padding-right: 24px;">
-        <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">购买药品信息</span></a-col>
-         <a-col :span="24">
-          <a-table :columns="columns" :data-source="durgList">
+        <a-col :span="8"><b>用户联系方式：</b>
+          {{ orderDetailInfo.user.phone }}
+        </a-col>
+        <a-col :span="8"><b>用户注册时间：</b>
+          {{ orderDetailInfo.user.createDate }}
+        </a-col>
+      </a-row>
+      <br/>
+      <br/>
+      <a-row style="padding-left: 24px;padding-right: 24px;">
+        <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">收货地址</span></a-col>
+        <a-col :span="8"><b>省份：</b>
+          {{ orderDetailInfo.address.province }}
+        </a-col>
+        <a-col :span="8"><b>城市：</b>
+          {{ orderDetailInfo.address.city }}
+        </a-col>
+        <a-col :span="8"><b>区：</b>
+          {{ orderDetailInfo.address.area }}
+        </a-col>
+      </a-row>
+      <br/>
+      <a-row style="padding-left: 24px;padding-right: 24px;">
+        <a-col :span="8"><b>联系方式：</b>
+          {{ orderDetailInfo.address.phone }}
+        </a-col>
+        <a-col :span="8"><b>联系人：</b>
+          {{ orderDetailInfo.address.contact }}
+        </a-col>
+      </a-row>
+      <br/>
+      <a-row style="padding-left: 24px;padding-right: 24px;">
+        <a-col :span="24"><b>详细地址：</b>
+          {{ orderDetailInfo.address.address }}
+        </a-col>
+      </a-row>
+      <br/>
+      <br/>
+      <a-row style="padding-left: 24px;padding-right: 24px;">
+        <a-col style="margin-bottom: 15px"><span style="font-size: 15px;font-weight: 650;color: #000c17">购买商品信息</span></a-col>
+        <a-col :span="24">
+          <a-table :columns="columns" :data-source="orderDetailInfo.detail">
           </a-table>
         </a-col>
       </a-row>
-      <a-divider orientation="left">
-        <span style="font-size: 12px;font-family: SimHei">订单发货</span>
-      </a-divider>
+      <br/>
       <a-row style="padding-left: 24px;padding-right: 24px;" :gutter="50">
+        <a-col :span="24">
+          <a-divider orientation="left">
+            <span style="font-size: 12px;font-family: SimHei">订单发货</span>
+          </a-divider>
+        </a-col>
         <a-col :span="24">
           <a-form-item label='物流备注' v-bind="formItemLayout">
             <a-textarea :rows="6" v-model="auditData.remark"/>
@@ -111,36 +180,61 @@ export default {
     },
     columns () {
       return [{
-        title: '药品名称',
-        dataIndex: 'drugName'
+        title: '商品名称',
+        dataIndex: 'commodity.name'
       }, {
-        title: '品牌',
-        dataIndex: 'brand'
+        title: '型号',
+        dataIndex: 'commodity.model'
       }, {
-        title: '数量',
-        dataIndex: 'quantity'
-      }, {
-        title: '药品图片',
-        dataIndex: 'images',
+        title: '商品图片',
+        dataIndex: 'commodity.images',
         customRender: (text, record, index) => {
-          if (!record.images) return <a-avatar shape="square" icon="user" />
+          if (!record.commodity.images) return <a-avatar shape="square" icon="user" />
           return <a-popover>
             <template slot="content">
-              <a-avatar shape="square" size={132} icon="user" src={ 'http://127.0.0.1:9527/imagesWeb/' + record.images.split(',')[0] } />
+              <a-avatar shape="square" size={132} icon="user" src={ 'http://127.0.0.1:9527/imagesWeb/' + record.commodity.images.split(',')[0] } />
             </template>
-            <a-avatar shape="square" icon="user" src={ 'http://127.0.0.1:9527/imagesWeb/' + record.images.split(',')[0] } />
+            <a-avatar shape="square" icon="user" src={ 'http://127.0.0.1:9527/imagesWeb/' + record.commodity.images.split(',')[0] } />
           </a-popover>
         }
       }, {
+        title: '数量',
+        dataIndex: 'num',
+        customRender: (text, row, index) => {
+          if (text !== null) {
+            return text
+          } else {
+            return '- -'
+          }
+        }
+      }, {
         title: '单价',
-        dataIndex: 'unitPrice'
+        dataIndex: 'price',
+        customRender: (text, row, index) => {
+          if (text !== null) {
+            return text
+          } else {
+            return '- -'
+          }
+        }
+      }, {
+        title: '总金额',
+        dataIndex: 'totalPrice',
+        customRender: (text, row, index) => {
+          if (text !== null) {
+            return (row.num * row.price).toFixed(2)
+          } else {
+            return '- -'
+          }
+        }
       }]
     }
   },
   watch: {
     'orderAuditShow': function (value) {
       if (value) {
-        this.selectOrderDetail(this.orderAuditData.id)
+        this.dataInit(this.orderAuditData.id)
+        this.current = this.orderAuditData.status
       }
     }
   },
@@ -154,20 +248,14 @@ export default {
       auditData: {
         remark: ''
       },
-      staffList: [],
-      durgList: []
+      orderDetailInfo: null
     }
   },
   methods: {
     moment,
-    selectOrderDetail (orderId) {
-      this.$get(`/cos/order-detail/detail/${orderId}`).then((r) => {
-        this.durgList = r.data.data
-      })
-    },
-    selectStaffByProduct (productId) {
-      this.$get(`/cos/staff-info/work/${productId}`).then((r) => {
-        this.staffList = r.data.data
+    dataInit (orderId) {
+      this.$get(`/cos/order-info/${orderId}`).then((r) => {
+        this.orderDetailInfo = r.data
       })
     },
     onDateChange (date) {

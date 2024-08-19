@@ -62,7 +62,7 @@
               <template slot="title">
                 {{ record.content }}
               </template>
-              {{ record.content.slice(0, 40) }} ...
+              {{ record.content.slice(0, 25) }} ...
             </a-tooltip>
           </template>
         </template>
@@ -138,7 +138,7 @@ export default {
         title: '公告内容',
         dataIndex: 'content',
         scopedSlots: { customRender: 'contentShow' },
-        width: 600
+        width: 400
       }, {
         title: '发布时间',
         dataIndex: 'createDate',

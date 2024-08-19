@@ -142,10 +142,12 @@ export default {
     columns () {
       return [{
         title: '商品名称',
-        dataIndex: 'commodityName'
+        dataIndex: 'commodityName',
+        ellipsis: true
       }, {
         title: '型号',
-        dataIndex: 'model'
+        dataIndex: 'model',
+        ellipsis: true
       }, {
         title: '单位',
         dataIndex: 'unit'
@@ -170,7 +172,8 @@ export default {
           } else {
             return '- -'
           }
-        }
+        },
+        ellipsis: true
       }, {
         title: '预警库存',
         dataIndex: 'currentNum',
@@ -213,7 +216,8 @@ export default {
           } else {
             return '- -'
           }
-        }
+        },
+        ellipsis: true
       }, {
         title: '操作',
         dataIndex: 'operation',

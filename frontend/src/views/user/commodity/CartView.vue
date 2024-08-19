@@ -12,19 +12,8 @@
       <a-row :gutter="20" style="width: 100%;margin-top: 20px">
         <a-col style="font-size: 15px;font-weight: 600;color: #000c17;margin-bottom: 15px">收货地址</a-col>
         <a-col :span="24" style="margin-bottom: 30px">
-          <a-select default-value="lucy" style="width: 100%">
-            <a-select-option value="jack">
-              Jack
-            </a-select-option>
-            <a-select-option value="lucy">
-              Lucy
-            </a-select-option>
-            <a-select-option value="disabled" disabled>
-              Disabled
-            </a-select-option>
-            <a-select-option value="Yiminghe">
-              yiminghe
-            </a-select-option>
+          <a-select style="width: 100%" @change="addressChange">
+            <a-select-option :value="item.id" v-for="(item, index) in addressList" :key="index">{{ item.address }}</a-select-option>
           </a-select>
         </a-col>
         <a-col :span="24" style="margin-bottom: 15px" v-if="addressInfo != null">
@@ -76,8 +65,8 @@
       <a-popconfirm title="确定放弃编辑？" @confirm="onClose" okText="确定" cancelText="取消">
         <a-button style="margin-right: .8rem">取消</a-button>
       </a-popconfirm>
-      <a-button v-if="userInfo.price > 10000" @click="handleSubmit(0)" type="primary" :loading="loading" style="margin-right: .8rem">预付款下单</a-button>
-      <a-button @click="handleSubmit(1)" type="primary" :loading="loading">添加到订单</a-button>
+      <a-button v-if="userInfo != null && userInfo.price > 10000" @click="handleSubmit(1)" type="primary" :loading="loading" style="margin-right: .8rem">预付款下单</a-button>
+      <a-button @click="handleSubmit(0)" type="primary" :loading="loading">添加到订单</a-button>
     </div>
   </a-drawer>
 </template>
@@ -128,6 +117,10 @@ export default {
     this.selectUserDetail()
   },
   methods: {
+    addressChange (value) {
+      let addressInfo = this.addressList.filter(e => e.id === value)
+      this.addressInfo = addressInfo[0]
+    },
     selectUserDetail () {
       this.$get(`/cos/user-info/selectAddressDetail/${this.currentUser.userId}`).then((r) => {
         this.userInfo = r.data.user
@@ -140,11 +133,15 @@ export default {
         this.$message.error('无数据信息！')
         return false
       }
+      if (this.addressInfo == null) {
+        this.$message.error('请选择收货地址！')
+        return false
+      }
       let commodityList = []
       this.cartData.forEach(e => {
         commodityList.push({commodityCode: e.code, num: e.total, price: e.sellPrice})
       })
-      let values = {userId: this.currentUser.userId, orderDetail: JSON.stringify(commodityList), type}
+      let values = {userId: this.currentUser.userId, orderDetail: JSON.stringify(commodityList), type, addressId: this.addressInfo.id}
       this.$post('/cos/order-info', values).then((r) => {
         this.$emit('success')
       })

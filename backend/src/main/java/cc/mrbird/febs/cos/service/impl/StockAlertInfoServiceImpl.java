@@ -97,6 +97,7 @@ public class StockAlertInfoServiceImpl extends ServiceImpl<StockAlertInfoMapper,
                 addStockAlert.setStatus(0);
                 addStockAlert.setCreateDate(DateUtil.formatDateTime(new Date()));
                 addStockAlert.setCurrentNum(storeRecordInfo.getNum());
+                addStockAlert.setRemark("【" + commodityInfo.getName() + "】库存数量为 " + storeRecordInfo.getNum() + ", 请尽快补货");
                 toAddList.add(addStockAlert);
             }
 
@@ -104,6 +105,7 @@ public class StockAlertInfoServiceImpl extends ServiceImpl<StockAlertInfoMapper,
                 notCheckItem.setStatus(0);
                 notCheckItem.setCreateDate(DateUtil.formatDateTime(new Date()));
                 notCheckItem.setCurrentNum(storeRecordInfo.getNum());
+                notCheckItem.setRemark("【" + commodityInfo.getName() + "】库存数量为 " + storeRecordInfo.getNum() + ", 请尽快补货");
                 toUpdateList.add(notCheckItem);
             }
 

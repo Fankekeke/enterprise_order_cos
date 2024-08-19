@@ -164,7 +164,8 @@ export default {
         }
       }, {
         title: '地址编号',
-        dataIndex: 'code'
+        dataIndex: 'code',
+        ellipsis: true
       }, {
         title: '区',
         dataIndex: 'area'
@@ -214,7 +215,8 @@ export default {
           } else {
             return '- -'
           }
-        }
+        },
+        ellipsis: true
       }, {
         title: '操作',
         dataIndex: 'operation',

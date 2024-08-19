@@ -153,7 +153,7 @@ public class OrderInfoController {
         // 创建时间
         orderInfo.setCreateDate(DateUtil.formatDateTime(new Date()));
         // 获取用户信息
-        UserInfo user = userInfoService.getById(orderInfo.getUserId());
+        UserInfo user = userInfoService.getOne(Wrappers.<UserInfo>lambdaQuery().eq(UserInfo::getUserId, orderInfo.getUserId()));
         if (user != null) {
             orderInfo.setUserId(user.getId());
         }

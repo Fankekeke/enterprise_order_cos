@@ -62,7 +62,7 @@
               <template slot="title">
                 {{ record.address }}
               </template>
-              {{ record.address.slice(0, 10) }} ...
+              {{ record.address.slice(0, 5) }} ...
             </a-tooltip>
           </template>
         </template>

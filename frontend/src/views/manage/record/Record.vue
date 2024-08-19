@@ -140,7 +140,8 @@ export default {
     columns () {
       return [{
         title: '商品名称',
-        dataIndex: 'name'
+        dataIndex: 'name',
+        ellipsis: true
       }, {
         title: '商品型号',
         dataIndex: 'model',
@@ -150,7 +151,8 @@ export default {
           } else {
             return '- -'
           }
-        }
+        },
+        ellipsis: true
       }, {
         title: '单位',
         dataIndex: 'unit',
@@ -170,7 +172,8 @@ export default {
           } else {
             return '- -'
           }
-        }
+        },
+        ellipsis: true
       }, {
         title: '商品图片',
         dataIndex: 'images',
@@ -215,7 +218,8 @@ export default {
           } else {
             return '- -'
           }
-        }
+        },
+        ellipsis: true
       }, {
         title: '总价格',
         dataIndex: 'totalPrice',
@@ -235,7 +239,8 @@ export default {
           } else {
             return '- -'
           }
-        }
+        },
+        ellipsis: true
       }]
     }
   },

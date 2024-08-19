@@ -80,51 +80,51 @@
           </a-row>
         </a-col>
         <a-col :span="12">
-          <div hoverable :bordered="false" style="width: 100%">
+          <div hoverable :bordered="false" style="width: 100%;margin-top: 25px">
             <a-skeleton active v-if="chartLoading" />
-            <p v-if="!chartLoading" style="font-size: 13px;margin-bottom: 8px;font-family: SimHei">12月内入库量统计</p>
+            <p v-if="!chartLoading" style="font-weight: 650;font-size: 15px;margin-bottom: 8px;font-family: SimHei">12月内入库量统计</p>
             <apexchart v-if="!chartLoading" type="radar" height="450" :options="chartOptions3" :series="series3"></apexchart>
           </div>
         </a-col>
         <a-col :span="8">
           <div hoverable :bordered="false" style="width: 100%">
             <a-skeleton active v-if="chartLoading" />
-            <p v-if="!chartLoading" style="font-size: 13px;margin-bottom: 8px;font-family: SimHei">商品销量排行</p>
+            <p v-if="!chartLoading" style="font-weight: 650;font-size: 15px;margin-bottom: 8px;font-family: SimHei">商品销量排行</p>
             <apexchart v-if="!chartLoading" type="pie" height="350" :options="chartOptions4" :series="series4"></apexchart>
           </div>
         </a-col>
         <a-col :span="8">
           <div hoverable :bordered="false" style="width: 100%">
             <a-skeleton active v-if="chartLoading" />
-            <p v-if="!chartLoading" style="font-size: 13px;margin-bottom: 8px;font-family: SimHei">商品销售排行</p>
+            <p v-if="!chartLoading" style="font-weight: 650;font-size: 15px;margin-bottom: 8px;font-family: SimHei">商品销售排行</p>
             <apexchart v-if="!chartLoading" type="radialBar" height="350" :options="chartOptions5" :series="series5"></apexchart>
           </div>
         </a-col>
         <a-col :span="8">
           <div hoverable :bordered="false" style="width: 100%">
             <a-skeleton active v-if="chartLoading" />
-            <p v-if="!chartLoading" style="font-size: 13px;margin-bottom: 8px;font-family: SimHei">销售商品分类</p>
+            <p v-if="!chartLoading" style="font-weight: 650;font-size: 15px;margin-bottom: 8px;font-family: SimHei">销售商品分类</p>
             <apexchart v-if="!chartLoading" type="pie" height="350" :options="chartOptions6" :series="series6"></apexchart>
           </div>
         </a-col>
         <a-col :span="24">
           <a-card hoverable :bordered="false" style="width: 100%">
             <a-skeleton active v-if="chartLoading" />
-            <p v-if="!chartLoading" style="font-size: 13px;margin-bottom: 8px;font-family: SimHei">12月内订单收益统计</p>
+            <p v-if="!chartLoading" style="font-weight: 650;font-size: 15px;margin-bottom: 8px;font-family: SimHei">12月内订单收益统计</p>
             <apexchart v-if="!chartLoading" type="line" height="350" :options="chartOptions" :series="series"></apexchart>
           </a-card>
         </a-col>
         <a-col :span="24">
           <a-card hoverable :bordered="false" style="width: 100%">
             <a-skeleton active v-if="chartLoading" />
-            <p v-if="!chartLoading" style="font-size: 13px;margin-bottom: 8px;font-family: SimHei">12月内订单量统计</p>
+            <p v-if="!chartLoading" style="font-weight: 650;font-size: 15px;margin-bottom: 8px;font-family: SimHei">12月内订单量统计</p>
             <apexchart v-if="!chartLoading" type="area" height="350" :options="chartOptions1" :series="series1"></apexchart>
           </a-card>
         </a-col>
         <a-col :span="24">
           <a-card hoverable :bordered="false" style="width: 100%">
             <a-skeleton active v-if="chartLoading" />
-            <p v-if="!chartLoading" style="font-size: 13px;margin-bottom: 8px;font-family: SimHei">12月内入库成本统计</p>
+            <p v-if="!chartLoading" style="font-weight: 650;font-size: 15px;margin-bottom: 8px;font-family: SimHei">12月内入库成本统计</p>
             <apexchart v-if="!chartLoading" type="bar" height="350" :options="chartOptions2" :series="series2"></apexchart>
           </a-card>
         </a-col>
@@ -215,31 +215,38 @@ export default {
       }],
       chartOptions2: {
         chart: {
-          height: 350,
           type: 'bar',
-          events: {
-            click: function (chart, w, e) {
-              // console.log(chart, w, e)
-            }
-          }
+          height: 350
         },
         plotOptions: {
           bar: {
-            columnWidth: '45%',
-            distributed: true
+            horizontal: false,
+            columnWidth: '55%'
           }
         },
         dataLabels: {
           enabled: false
         },
-        legend: {
-          show: false
+        stroke: {
+          show: true,
+          width: 2,
+          colors: ['transparent']
         },
         xaxis: {
-          categories: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
-          labels: {
-            style: {
-              fontSize: '12px'
+          categories: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+        },
+        yaxis: {
+          title: {
+            text: ''
+          }
+        },
+        fill: {
+          opacity: 1
+        },
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return val + ' 单'
             }
           }
         }

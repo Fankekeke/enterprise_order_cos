@@ -136,10 +136,12 @@ export default {
     columns () {
       return [{
         title: '商品名称',
-        dataIndex: 'name'
+        dataIndex: 'name',
+        ellipsis: true
       }, {
         title: '型号',
-        dataIndex: 'model'
+        dataIndex: 'model',
+        ellipsis: true
       }, {
         title: '单位',
         dataIndex: 'unit'
@@ -164,7 +166,8 @@ export default {
           } else {
             return '- -'
           }
-        }
+        },
+        ellipsis: true
       }, {
         title: '当前库存',
         dataIndex: 'num',
@@ -194,7 +197,8 @@ export default {
           } else {
             return '- -'
           }
-        }
+        },
+        ellipsis: true
       }, {
         title: '操作',
         dataIndex: 'operation',
@@ -224,8 +228,11 @@ export default {
       this.selectedRows = selectedRows
     },
     replenishment () {
-      this.$get('/cos/storehouse-info/replenishment').then((r) => {
-        this.$message.success('等在盘库~请稍等')
+      this.$message.loading('等在盘库~请稍等..', 0)
+      this.$get('/cos/stock-alert-info/generateStoreAlert').then((r) => {
+        this.$message.destroy()
+        this.$message.success('盘库完成~')
+        this.search()
       })
     },
     add () {
