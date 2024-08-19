@@ -145,7 +145,7 @@ export default {
         commodityList.push({commodityCode: e.code, num: e.total, price: e.sellPrice})
       })
       let values = {userId: this.currentUser.userId, orderDetail: JSON.stringify(commodityList), type}
-      this.$post('/cos/order-info/orderSubmit', values).then((r) => {
+      this.$post('/cos/order-info', values).then((r) => {
         this.$emit('success')
       })
     },

@@ -82,42 +82,49 @@
         <a-col :span="12">
           <div hoverable :bordered="false" style="width: 100%">
             <a-skeleton active v-if="chartLoading" />
+            <p v-if="!chartLoading" style="font-size: 13px;margin-bottom: 8px;font-family: SimHei">12月内入库量统计</p>
             <apexchart v-if="!chartLoading" type="radar" height="450" :options="chartOptions3" :series="series3"></apexchart>
           </div>
         </a-col>
         <a-col :span="8">
           <div hoverable :bordered="false" style="width: 100%">
             <a-skeleton active v-if="chartLoading" />
+            <p v-if="!chartLoading" style="font-size: 13px;margin-bottom: 8px;font-family: SimHei">商品销量排行</p>
             <apexchart v-if="!chartLoading" type="pie" height="350" :options="chartOptions4" :series="series4"></apexchart>
           </div>
         </a-col>
         <a-col :span="8">
           <div hoverable :bordered="false" style="width: 100%">
             <a-skeleton active v-if="chartLoading" />
+            <p v-if="!chartLoading" style="font-size: 13px;margin-bottom: 8px;font-family: SimHei">商品销售排行</p>
             <apexchart v-if="!chartLoading" type="radialBar" height="350" :options="chartOptions5" :series="series5"></apexchart>
           </div>
         </a-col>
         <a-col :span="8">
           <div hoverable :bordered="false" style="width: 100%">
             <a-skeleton active v-if="chartLoading" />
+            <p v-if="!chartLoading" style="font-size: 13px;margin-bottom: 8px;font-family: SimHei">销售商品分类</p>
             <apexchart v-if="!chartLoading" type="pie" height="350" :options="chartOptions6" :series="series6"></apexchart>
           </div>
         </a-col>
         <a-col :span="24">
           <a-card hoverable :bordered="false" style="width: 100%">
             <a-skeleton active v-if="chartLoading" />
+            <p v-if="!chartLoading" style="font-size: 13px;margin-bottom: 8px;font-family: SimHei">12月内订单收益统计</p>
             <apexchart v-if="!chartLoading" type="line" height="350" :options="chartOptions" :series="series"></apexchart>
           </a-card>
         </a-col>
         <a-col :span="24">
           <a-card hoverable :bordered="false" style="width: 100%">
             <a-skeleton active v-if="chartLoading" />
+            <p v-if="!chartLoading" style="font-size: 13px;margin-bottom: 8px;font-family: SimHei">12月内订单量统计</p>
             <apexchart v-if="!chartLoading" type="area" height="350" :options="chartOptions1" :series="series1"></apexchart>
           </a-card>
         </a-col>
         <a-col :span="24">
           <a-card hoverable :bordered="false" style="width: 100%">
             <a-skeleton active v-if="chartLoading" />
+            <p v-if="!chartLoading" style="font-size: 13px;margin-bottom: 8px;font-family: SimHei">12月内入库成本统计</p>
             <apexchart v-if="!chartLoading" type="bar" height="350" :options="chartOptions2" :series="series2"></apexchart>
           </a-card>
         </a-col>
