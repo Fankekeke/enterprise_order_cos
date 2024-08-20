@@ -147,7 +147,8 @@ export default {
           } else {
             return '- -'
           }
-        }
+        },
+        ellipsis: true
       }, {
         title: '总金额',
         dataIndex: 'totalPrice',
@@ -161,16 +162,6 @@ export default {
       }, {
         title: '出库人',
         dataIndex: 'putUser',
-        customRender: (text, row, index) => {
-          if (text !== null) {
-            return text
-          } else {
-            return '- -'
-          }
-        }
-      }, {
-        title: '备注',
-        dataIndex: 'remark',
         customRender: (text, row, index) => {
           if (text !== null) {
             return text

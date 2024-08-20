@@ -141,6 +141,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         // 如果为预付款
         if ("1".equals(orderInfo.getType())) {
             // 预付款金额为40%
+            orderInfo.setOweCode("OWE-" + System.currentTimeMillis());
             orderInfo.setSubsistPrice(NumberUtil.mul(orderInfo.getTotalPrice(), 0.4));
             orderInfo.setOwePrice(NumberUtil.sub(totalPrice, orderInfo.getSubsistPrice()));
         }
@@ -159,14 +160,15 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         // 返回数据
         LinkedHashMap<String, Object> result = new LinkedHashMap<>();
 
+        List<OrderInfo> orderInfoList = this.list(Wrappers.<OrderInfo>lambdaQuery().ne(OrderInfo::getStatus, "0"));
         // 总订单
-        result.put("registerNum", 0);
-        // 总收益
-        result.put("orderPrice", 0);
+        result.put("registerNum", orderInfoList.size());
+        // 总收益s
+        result.put("orderPrice", orderInfoList.stream().map(OrderInfo::getTotalPrice).reduce(BigDecimal.ZERO, BigDecimal::add));
         // 出库数量
-        result.put("outNum", 0);
+        result.put("outNum", orderOutInfoMapper.selectCount(Wrappers.<OrderOutInfo>lambdaQuery()));
         // 入库数量
-        result.put("putNum", 0);
+        result.put("putNum", orderPutInfoMapper.selectCount(Wrappers.<OrderPutInfo>lambdaQuery()));
 
         int year = DateUtil.year(new Date());
         int month = DateUtil.month(new Date()) + 1;
@@ -287,7 +289,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         LinkedHashMap<Integer, Integer> saleTypeRankMap = new LinkedHashMap<>();
 
         List<String> orderCodes = orderOutList.stream().map(OrderOutInfo::getCode).collect(Collectors.toList());
-        List<StoreRecordInfo> recordInfoList = storeRecordInfoMapper.selectList(Wrappers.<StoreRecordInfo>lambdaQuery().eq(StoreRecordInfo::getOrderNumber, orderCodes));
+        List<StoreRecordInfo> recordInfoList = CollectionUtil.isNotEmpty(orderCodes) ? storeRecordInfoMapper.selectList(Wrappers.<StoreRecordInfo>lambdaQuery().in(StoreRecordInfo::getOrderNumber, orderCodes)) : Collections.emptyList();
         Map<String, List<StoreRecordInfo>> recordInfoMap = recordInfoList.stream().collect(Collectors.groupingBy(StoreRecordInfo::getCommodityCode));
 
         // 商品信息
@@ -412,7 +414,7 @@ public class OrderInfoServiceImpl extends ServiceImpl<OrderInfoMapper, OrderInfo
         LinkedHashMap<Integer, Integer> saleTypeRankMap = new LinkedHashMap<>();
 
         List<String> orderCodes = orderOutList.stream().map(OrderOutInfo::getCode).collect(Collectors.toList());
-        List<StoreRecordInfo> recordInfoList = storeRecordInfoMapper.selectList(Wrappers.<StoreRecordInfo>lambdaQuery().eq(StoreRecordInfo::getOrderNumber, orderCodes));
+        List<StoreRecordInfo> recordInfoList = CollectionUtil.isNotEmpty(orderCodes) ? storeRecordInfoMapper.selectList(Wrappers.<StoreRecordInfo>lambdaQuery().in(StoreRecordInfo::getOrderNumber, orderCodes)) : Collections.emptyList();
         Map<String, List<StoreRecordInfo>> recordInfoMap = recordInfoList.stream().collect(Collectors.groupingBy(StoreRecordInfo::getCommodityCode));
 
         // 商品信息

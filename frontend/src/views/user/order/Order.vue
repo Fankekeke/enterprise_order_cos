@@ -71,8 +71,9 @@
           </template>
         </template>
         <template slot="operation" slot-scope="text, record">
-          <a-icon type="file-search" @click="orderViewOpen(record)" title="详 情"></a-icon>
-          <a-icon type="setting" theme="twoTone" twoToneColor="#4a9ff5" @click="orderAuditOpen(record)" title="修 改" style="margin-left: 15px"></a-icon>
+          <a-icon v-if="(record.type == 0 && record.status == 0 )|| (record.type == 1 && record.oweDate == null)" type="alipay" @click="pay(record)" title="支 付"></a-icon>
+          <a-icon type="file-search" @click="orderViewOpen(record)" title="详 情" style="margin-left: 15px"></a-icon>
+<!--          <a-icon type="setting" theme="twoTone" twoToneColor="#4a9ff5" @click="orderAuditOpen(record)" title="修 改" style="margin-left: 15px"></a-icon>-->
         </template>
       </a-table>
     </div>
@@ -258,6 +259,56 @@ export default {
     this.fetch()
   },
   methods: {
+    pay (row) {
+      if (row.type === '0' && row.status === '0') {
+        let data = { outTradeNo: row.code, subject: `${row.code}`, totalAmount: row.totalPrice, body: '' }
+        this.$post('/cos/pay/alipay', data).then((r) => {
+          // 添加之前先删除一下，如果单页面，页面不刷新，添加进去的内容会一直保留在页面中，二次调用form表单会出错
+          const divForm = document.getElementsByTagName('div')
+          if (divForm.length) {
+            document.body.removeChild(divForm[0])
+          }
+          const div = document.createElement('div')
+          div.innerHTML = r.data.msg // data就是接口返回的form 表单字符串
+          // console.log(div.innerHTML)
+          document.body.appendChild(div)
+          document.forms[0].setAttribute('target', '_self') // 新开窗口跳转
+          document.forms[0].submit()
+        })
+      }
+      if (row.type === '1' && row.payDate == null) {
+        let data = { outTradeNo: row.code, subject: `${row.code}`, totalAmount: row.subsistPrice, body: '' }
+        this.$post('/cos/pay/alipay', data).then((r) => {
+          // 添加之前先删除一下，如果单页面，页面不刷新，添加进去的内容会一直保留在页面中，二次调用form表单会出错
+          const divForm = document.getElementsByTagName('div')
+          if (divForm.length) {
+            document.body.removeChild(divForm[0])
+          }
+          const div = document.createElement('div')
+          div.innerHTML = r.data.msg // data就是接口返回的form 表单字符串
+          // console.log(div.innerHTML)
+          document.body.appendChild(div)
+          document.forms[0].setAttribute('target', '_self') // 新开窗口跳转
+          document.forms[0].submit()
+        })
+      }
+      if (row.type === '1' && row.oweDate == null) {
+        let data = { outTradeNo: row.oweCode, subject: `${row.oweCode}`, totalAmount: row.owePrice, body: '' }
+        this.$post('/cos/pay/alipay', data).then((r) => {
+          // 添加之前先删除一下，如果单页面，页面不刷新，添加进去的内容会一直保留在页面中，二次调用form表单会出错
+          const divForm = document.getElementsByTagName('div')
+          if (divForm.length) {
+            document.body.removeChild(divForm[0])
+          }
+          const div = document.createElement('div')
+          div.innerHTML = r.data.msg // data就是接口返回的form 表单字符串
+          // console.log(div.innerHTML)
+          document.body.appendChild(div)
+          document.forms[0].setAttribute('target', '_self') // 新开窗口跳转
+          document.forms[0].submit()
+        })
+      }
+    },
     orderStatusOpen (row) {
       this.orderStatusView.data = row
       this.orderStatusView.visiable = true
@@ -406,6 +457,7 @@ export default {
       if (params.status === undefined) {
         delete params.status
       }
+      params.userId = this.currentUser.userId
       this.$get('/cos/order-info/page', {
         ...params
       }).then((r) => {

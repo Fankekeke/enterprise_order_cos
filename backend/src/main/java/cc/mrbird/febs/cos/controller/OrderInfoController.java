@@ -65,7 +65,7 @@ public class OrderInfoController {
      */
     @GetMapping("/ship")
     @Transactional(rollbackFor = Exception.class)
-    public R orderShip(Integer orderId) {
+    public R orderShip(@RequestParam(name = "orderId") Integer orderId, @RequestParam(name = "remark", required = false) String remark) {
         // 更新订单状态
         OrderInfo orderInfo = orderInfoService.getById(orderId);
         orderInfoService.update(Wrappers.<OrderInfo>lambdaUpdate().set(OrderInfo::getStatus, "4").eq(OrderInfo::getId, orderId));
@@ -113,7 +113,7 @@ public class OrderInfoController {
         // 添加物流信息
         LogisticsInfo logistics = new LogisticsInfo();
         logistics.setOrderId(orderId);
-        logistics.setRemark("商品已发货....");
+        logistics.setRemark(StrUtil.isEmpty(remark) ? "商品已发货...." : remark);
         logistics.setCreateDate(DateUtil.formatDateTime(new Date()));
         logistics.setCurrentLogistics(1);
         return R.ok(logisticsInfoService.save(logistics));

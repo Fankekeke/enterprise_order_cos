@@ -111,13 +111,13 @@ export default {
     columns () {
       return [{
         title: '订单编号',
-        dataIndex: 'code'
+        dataIndex: 'orderCode'
       }, {
         title: '总价格',
-        dataIndex: 'totalCost'
+        dataIndex: 'totalPrice'
       }, {
         title: '客户名称',
-        dataIndex: 'name',
+        dataIndex: 'userName',
         customRender: (text, row, index) => {
           if (text !== null) {
             return text
@@ -137,14 +137,15 @@ export default {
         }
       }, {
         title: '收获地址',
-        dataIndex: 'userAddress',
+        dataIndex: 'address',
         customRender: (text, row, index) => {
           if (text !== null) {
             return text
           } else {
             return '- -'
           }
-        }
+        },
+        ellipsis: true
       }, {
         title: '物流内容',
         dataIndex: 'remark',

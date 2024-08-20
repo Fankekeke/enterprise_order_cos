@@ -1,5 +1,5 @@
 <template>
-  <a-modal v-model="show" title="订单详情" @cancel="onClose" :width="900">
+  <a-modal v-model="show" title="订单详情" @cancel="onClose" :width="950">
     <template slot="footer">
       <a-button key="back" @click="onClose" type="danger">
         关闭
@@ -7,11 +7,19 @@
     </template>
     <div style="font-size: 13px;font-family: SimHei" v-if="orderDetailInfo !== null">
       <div style="padding-left: 24px;padding-right: 24px;margin-bottom: 50px;margin-top: 50px">
-        <a-steps :current="current" progress-dot size="small">
-          <a-step title="待付款" />
-          <a-step title="已下单" />
-          <a-step title="配送中" />
-          <a-step title="已收货" />
+        <a-steps :current="current" progress-dot size="small" v-if="orderDetailInfo.order.type == 0">
+          <a-step title="待支付" />
+          <a-step title="已支付" />
+          <a-step title="已出库" />
+          <a-step title="已签收" />
+        </a-steps>
+        <a-steps :current="current" progress-dot size="small" v-if="orderDetailInfo.order.type == 1">
+          <a-step title="待支付" />
+          <a-step title="预付款已缴" />
+          <a-step title="尾款已缴" />
+          <a-step title="已支付" />
+          <a-step title="已出库" />
+          <a-step title="已签收" />
         </a-steps>
       </div>
       <a-row style="padding-left: 24px;padding-right: 24px;">
@@ -20,7 +28,7 @@
           {{ orderDetailInfo.order.code }}
         </a-col>
         <a-col :span="8"><b>总价格：</b>
-          {{ orderDetailInfo.totalPrice ? orderDetailInfo.totalPrice : '- -' }} 元
+          {{ orderDetailInfo.order.totalPrice ? orderDetailInfo.order.totalPrice : '- -' }} 元
         </a-col>
         <a-col :span="8"><b>联系方式：</b>
           <span v-if="orderDetailInfo.order.type == 0">正常订单</span>
@@ -30,12 +38,12 @@
       <br/>
       <a-row style="padding-left: 24px;padding-right: 24px;">
         <a-col :span="8"><b>订单状态：</b>
-          <span v-if="orderDetailInfo.order.status == 0">待付款</span>
-          <span v-if="orderDetailInfo.order.status == 1">已下单</span>
-          <span v-if="orderDetailInfo.order.status == 2">配送中</span>
-          <span v-if="orderDetailInfo.order.status == 3">已收货</span>
-          <span v-if="orderDetailInfo.order.status == 4">已收货</span>
-          <span v-if="orderDetailInfo.order.status == 5">已收货</span>
+          <span v-if="orderDetailInfo.order.status == 0">待支付</span>
+          <span v-if="orderDetailInfo.order.status == 1">预付款已缴</span>
+          <span v-if="orderDetailInfo.order.status == 2">尾款已缴</span>
+          <span v-if="orderDetailInfo.order.status == 3">已支付</span>
+          <span v-if="orderDetailInfo.order.status == 4">已出库</span>
+          <span v-if="orderDetailInfo.order.status == 5">已签收</span>
         </a-col>
         <a-col :span="8"><b>预付款金额：</b>
           {{ orderDetailInfo.order.subsistPrice ? orderDetailInfo.order.subsistPrice : '- -' }} 元
@@ -241,7 +249,50 @@ export default {
     orderShow: function (value) {
       if (value) {
         this.dataInit(this.orderData.id)
-        this.current = this.orderData.status
+        if (this.orderData.type === '0') {
+          switch (this.orderData.status) {
+            case '0':
+              this.current = 0
+              break
+            case '1':
+              this.current = 1
+              break
+            case '2':
+              this.current = 1
+              break
+            case '3':
+              this.current = 1
+              break
+            case '4':
+              this.current = 2
+              break
+            case '5':
+              this.current = 3
+              break
+          }
+        }
+        if (this.orderData.type === '1') {
+          switch (this.orderData.status) {
+            case '0':
+              this.current = 0
+              break
+            case '1':
+              this.current = 1
+              break
+            case '2':
+              this.current = 3
+              break
+            case '3':
+              this.current = 3
+              break
+            case '4':
+              this.current = 4
+              break
+            case '5':
+              this.current = 5
+              break
+          }
+        }
       }
     }
   },

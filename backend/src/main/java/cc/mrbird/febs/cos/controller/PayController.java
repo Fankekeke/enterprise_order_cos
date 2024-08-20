@@ -14,6 +14,7 @@ import cn.hutool.core.util.StrUtil;
 import com.alipay.api.AlipayApiException;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -53,11 +54,17 @@ public class PayController {
      * @param orderCode 订单编号
      * @return 结果
      */
-    @PostMapping(value = "/rollback")
+    @GetMapping(value = "/rollback")
     public R alipayRollback(String orderCode) {
 
         // 获取订单信息
-        OrderInfo orderInfo = orderInfoService.getOne(Wrappers.<OrderInfo>lambdaQuery().eq(OrderInfo::getCode, orderCode));
+        OrderInfo orderInfo = null;
+        if (orderCode.contains("OD")) {
+            orderInfo = orderInfoService.getOne(Wrappers.<OrderInfo>lambdaQuery().eq(OrderInfo::getCode, orderCode));
+        }
+        if (orderCode.contains("OWE")) {
+            orderInfo = orderInfoService.getOne(Wrappers.<OrderInfo>lambdaQuery().eq(OrderInfo::getOweCode, orderCode));
+        }
         if (orderInfo == null) {
             return R.ok(false);
         }
@@ -74,7 +81,7 @@ public class PayController {
             orderInfo.setStatus("1");
             user.setPrice(NumberUtil.add(user.getPrice(), orderInfo.getSubsistPrice()));
             typeStr = "预付款";
-        } else if ("1".equals(orderInfo.getType()) && "1".equals(orderInfo.getStatus())) {
+        } else if ("1".equals(orderInfo.getType()) && StrUtil.isEmpty(orderInfo.getOweDate())) {
             orderInfo.setOweDate(DateUtil.formatDateTime(new Date()));
             orderInfo.setStatus("3");
             user.setPrice(NumberUtil.add(user.getPrice(), orderInfo.getOwePrice()));

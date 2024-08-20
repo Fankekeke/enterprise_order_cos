@@ -39,4 +39,12 @@ public interface IUserInfoService extends IService<UserInfo> {
      * @return 结果
      */
     LinkedHashMap<String, Object> selectAddressDetail(Integer userId);
+
+    /**
+     * 查询用户信息详情【公告信息】
+     *
+     * @param userId 主键ID
+     * @return 结果
+     */
+    LinkedHashMap<String, Object> selectBulletinDetail(Integer userId);
 }

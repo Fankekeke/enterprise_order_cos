@@ -1,5 +1,5 @@
 <template>
-  <a-modal v-model="show" title="修改物流" @cancel="onClose" :width="800">
+  <a-modal v-model="show" title="修改物流" @cancel="onClose" :width="950">
     <template slot="footer">
       <a-button key="back" @click="onClose">
         取消
@@ -122,6 +122,7 @@ export default {
       this.form.resetFields()
     },
     onClose () {
+      this.remark = ''
       this.reset()
       this.$emit('close')
     },
@@ -130,11 +131,12 @@ export default {
         values.id = this.rowId
         if (!err) {
           this.loading = true
-          this.$get('/cos/order-info/ship', {
+          this.$put('/cos/logistics-info/updateLogisticsOrder', {
             'orderId': this.rowId,
             'remark': this.remark
           }).then((r) => {
             this.reset()
+            this.remark = ''
             this.$emit('success')
           }).catch(() => {
             this.loading = false

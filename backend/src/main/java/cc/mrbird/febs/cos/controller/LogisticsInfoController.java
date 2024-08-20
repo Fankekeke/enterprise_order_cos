@@ -39,6 +39,17 @@ public class LogisticsInfoController {
     }
 
     /**
+     * 获取订单物流
+     *
+     * @param orderId 订单ID
+     * @return 结果
+     */
+    @GetMapping("/order/{orderId}")
+    public R selectLogisticsByOrder(@PathVariable("orderId") Integer orderId) {
+        return R.ok(logisticsInfoService.list(Wrappers.<LogisticsInfo>lambdaQuery().eq(LogisticsInfo::getOrderId, orderId)));
+    }
+
+    /**
      * 更新订单物流
      *
      * @param logisticsInfo 物流信息

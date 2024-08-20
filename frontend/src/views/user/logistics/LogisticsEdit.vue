@@ -1,12 +1,12 @@
 <template>
-  <a-modal v-model="show" title="修改物流" @cancel="onClose" :width="800">
+  <a-modal v-model="show" title="修改物流" @cancel="onClose" :width="950">
     <template slot="footer">
       <a-button key="back" @click="onClose">
         取消
       </a-button>
-      <a-button key="submit" type="primary" :loading="loading" @click="handleSubmit">
-        修改
-      </a-button>
+<!--      <a-button key="submit" type="primary" :loading="loading" @click="handleSubmit">-->
+<!--        修改-->
+<!--      </a-button>-->
     </template>
     <div style="font-size: 13px;font-family: SimHei">
       <a-row style="padding-left: 24px;padding-right: 24px;">
@@ -16,16 +16,13 @@
           </a-table>
         </a-col>
       </a-row>
-      <a-divider orientation="left">
-        <span style="font-size: 12px;font-family: SimHei">更新物流</span>
-      </a-divider>
-      <a-row style="padding-left: 24px;padding-right: 24px;" :gutter="50">
-        <a-col :span="24">
-          <a-form-item label='物流备注' v-bind="formItemLayout">
-            <a-textarea :rows="6" v-model="remark"/>
-          </a-form-item>
-        </a-col>
-      </a-row>
+<!--      <a-row style="padding-left: 24px;padding-right: 24px;" :gutter="50">-->
+<!--        <a-col :span="24">-->
+<!--          <a-form-item label='物流备注' v-bind="formItemLayout">-->
+<!--            <a-textarea :rows="6" v-model="remark"/>-->
+<!--          </a-form-item>-->
+<!--        </a-col>-->
+<!--      </a-row>-->
     </div>
   </a-modal>
 </template>
@@ -122,6 +119,7 @@ export default {
       this.form.resetFields()
     },
     onClose () {
+      this.remark = ''
       this.reset()
       this.$emit('close')
     },
@@ -130,11 +128,12 @@ export default {
         values.id = this.rowId
         if (!err) {
           this.loading = true
-          this.$get('/cos/order-info/ship', {
+          this.$put('/cos/logistics-info/updateLogisticsOrder', {
             'orderId': this.rowId,
             'remark': this.remark
           }).then((r) => {
             this.reset()
+            this.remark = ''
             this.$emit('success')
           }).catch(() => {
             this.loading = false

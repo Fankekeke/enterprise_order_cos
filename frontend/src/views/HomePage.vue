@@ -122,6 +122,7 @@ export default {
     },
     setTitleData (titleData) {
       this.titleData = titleData
+      console.log(this.titleData)
     }
   },
   mounted () {

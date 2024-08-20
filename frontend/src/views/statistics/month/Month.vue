@@ -413,6 +413,23 @@ export default {
           this.series4.push(saleTypeRankMapCopy[key])
           this.chartOptions4.labels.push(key)
         }
+
+        this.series5 = []
+        this.chartOptions5.labels = []
+        let saleRank = r.data.saleRank
+        saleRank.forEach(item => {
+          this.series5.push(item.num)
+          this.chartOptions5.labels.push(item.name)
+        })
+
+        this.series6 = []
+        this.chartOptions6.labels = []
+        let salePriceRank = r.data.salePriceRank
+        salePriceRank.forEach(item => {
+          this.series6.push(item.num)
+          this.chartOptions6.labels.push(item.name)
+        })
+
         setTimeout(() => {
           this.chartLoading = false
         }, 200)

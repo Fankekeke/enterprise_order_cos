@@ -1,15 +1,9 @@
 package cc.mrbird.febs.cos.service.impl;
 
 import cc.mrbird.febs.cos.dao.OrderInfoMapper;
-import cc.mrbird.febs.cos.entity.AddressInfo;
-import cc.mrbird.febs.cos.entity.LogisticsInfo;
-import cc.mrbird.febs.cos.entity.OrderInfo;
-import cc.mrbird.febs.cos.entity.UserInfo;
+import cc.mrbird.febs.cos.entity.*;
 import cc.mrbird.febs.cos.dao.UserInfoMapper;
-import cc.mrbird.febs.cos.service.IAddressInfoService;
-import cc.mrbird.febs.cos.service.ILogisticsInfoService;
-import cc.mrbird.febs.cos.service.IOrderInfoService;
-import cc.mrbird.febs.cos.service.IUserInfoService;
+import cc.mrbird.febs.cos.service.*;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -40,6 +34,8 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     private final ILogisticsInfoService logisticsInfoService;
 
     private final IAddressInfoService addressInfoService;
+
+    private final IBulletinInfoService bulletinInfoService;
 
     /**
      * 分页获取用户信息
@@ -128,6 +124,33 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         List<AddressInfo> addressInfoList = addressInfoService.list(Wrappers.<AddressInfo>lambdaQuery().eq(AddressInfo::getUserId, userInfo.getId()));
         result.put("address", addressInfoList);
         result.put("default", CollectionUtil.isEmpty(addressInfoList) ? null : addressInfoList.stream().filter(e -> "1".equals(e.getDefaultFlag())).collect(Collectors.toList()).get(0));
+        return result;
+    }
+
+    /**
+     * 查询用户信息详情【公告信息】
+     *
+     * @param userId 主键ID
+     * @return 结果
+     */
+    @Override
+    public LinkedHashMap<String, Object> selectBulletinDetail(Integer userId) {
+        // 返回数据
+        LinkedHashMap<String, Object> result = new LinkedHashMap<String, Object>() {
+            {
+                put("user", null);
+                put("bulletin", Collections.emptyList());
+            }
+        };
+        UserInfo userInfo = this.getOne(Wrappers.<UserInfo>lambdaQuery().eq(UserInfo::getUserId, userId));
+        if (userInfo == null) {
+            return result;
+        }
+        result.put("user", userInfo);
+
+        // 公告信息
+        List<BulletinInfo> bulletinInfoList = bulletinInfoService.list(Wrappers.<BulletinInfo>lambdaQuery().eq(BulletinInfo::getRackUp, "1"));
+        result.put("bulletin", bulletinInfoList);
         return result;
     }
 }

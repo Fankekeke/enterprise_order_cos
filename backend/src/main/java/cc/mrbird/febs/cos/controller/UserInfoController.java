@@ -86,6 +86,17 @@ public class UserInfoController {
     }
 
     /**
+     * 查询用户信息详情【公告信息】
+     *
+     * @param id 主键ID
+     * @return 结果
+     */
+    @GetMapping("/selectBulletinDetail/{id}")
+    public R selectBulletinDetail(@PathVariable("id") Integer id) {
+        return R.ok(userInfoService.selectBulletinDetail(id));
+    }
+
+    /**
      * 查询用户信息列表
      *
      * @return 结果

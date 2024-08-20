@@ -35,6 +35,11 @@ public class OrderInfo implements Serializable {
     private String code;
 
     /**
+     * 尾款订单编号
+     */
+    private String oweCode;
+
+    /**
      * 所属用户
      */
     private Integer userId;
