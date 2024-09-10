@@ -43,14 +43,6 @@ WebStorm OR VScode 编译器 [https://www.jianshu.com/p/d63b5bae9dff]
 admin
 1234qwer
 
-[医院管理员]
-HPL-171
-1234qwer
-
-[医生]
-DT-1718623180840
-1234qwer
-
 [用户]
 fank
 1234qwer
