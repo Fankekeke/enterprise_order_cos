@@ -141,7 +141,7 @@ public class OrderInfoController {
     }
 
     /**
-     * 新增订单信息1
+     * 新增订单信息
      *
      * @param orderInfo 订单信息
      * @return 结果
