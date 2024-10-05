@@ -35,6 +35,9 @@
         <if test="storeRecordInfo.model != null and storeRecordInfo.model != ''">
             AND ci.model LIKE CONCAT('%',#{storeRecordInfo.model},'%')
         </if>
+        <if test="storeRecordInfo.type != null and storeRecordInfo.type != ''">
+            AND sri.type = #{storeRecordInfo.type}
+        </if>
         order by
         sri.create_date desc
     </select>

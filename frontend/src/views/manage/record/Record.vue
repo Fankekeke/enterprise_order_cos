@@ -26,7 +26,7 @@
                 label="操作类型"
                 :labelCol="{span: 5}"
                 :wrapperCol="{span: 18, offset: 1}">
-                <a-select v-model="queryParams.status">
+                <a-select v-model="queryParams.type">
                   <a-select-option value="1">入库</a-select-option>
                   <a-select-option value="2">出库</a-select-option>
                 </a-select>
@@ -369,8 +369,8 @@ export default {
         params.size = this.pagination.defaultPageSize
         params.current = this.pagination.defaultCurrent
       }
-      if (params.record === undefined) {
-        delete params.record
+      if (params.type === undefined) {
+        delete params.type
       }
       this.$get('/cos/store-record-info/page', {
         ...params
