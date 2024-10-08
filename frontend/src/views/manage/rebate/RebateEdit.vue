@@ -185,7 +185,7 @@ export default {
         values.id = this.rowId
         if (!err) {
           this.loading = true
-          this.$put('/cos/rebate-info', {
+          this.$put('/cos/commodity-rebate-info', {
             ...values
           }).then((r) => {
             this.reset()

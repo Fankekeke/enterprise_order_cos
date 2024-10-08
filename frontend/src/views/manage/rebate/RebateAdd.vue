@@ -220,7 +220,7 @@ export default {
         values.birthday = moment(values.birthday).format('YYYY-MM-DD')
         if (!err) {
           this.loading = true
-          this.$post('/cos/rebate-info', {
+          this.$post('/cos/commodity-rebate-info', {
             ...values
           }).then((r) => {
             this.reset()
