@@ -1,4 +1,4 @@
-### 基于SpringBoot + Vue的企业订货系统.
+### 基于SpringBoot + Vue的商品选购、订货系统.
 
 #### 安装环境
 
