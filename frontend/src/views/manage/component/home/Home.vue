@@ -23,7 +23,7 @@
                   <a-col :span="4"><a-icon type="arrow-up" style="font-size: 30px;margin-top: 3px"/></a-col>
                   <a-col :span="18" style="font-size: 28px;font-weight: 500;font-family: SimHei">
                     {{ titleData.monthOutPrice }}
-                    <span style="font-size: 20px;margin-top: 3px">单</span>
+                    <span style="font-size: 20px;margin-top: 3px">元</span>
                   </a-col>
                 </a-row>
               </a-card>

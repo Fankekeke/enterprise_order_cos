@@ -73,7 +73,7 @@
         <template slot="operation" slot-scope="text, record">
           <a-icon v-if="(record.type == 0 && record.status == 0 )|| (record.type == 1 && record.oweDate == null)" type="alipay" @click="pay(record)" title="支 付"></a-icon>
           <a-icon type="file-search" @click="orderViewOpen(record)" title="详 情" style="margin-left: 15px"></a-icon>
-<!--          <a-icon type="setting" theme="twoTone" twoToneColor="#4a9ff5" @click="orderAuditOpen(record)" title="修 改" style="margin-left: 15px"></a-icon>-->
+          <a-icon type="check" v-if="record.status == 4" @click="orderAuditOpen(record)" title="签 收" style="margin-left: 15px"></a-icon>
         </template>
       </a-table>
     </div>
@@ -291,8 +291,7 @@ export default {
           document.forms[0].setAttribute('target', '_self') // 新开窗口跳转
           document.forms[0].submit()
         })
-      }
-      if (row.type === '1' && row.oweDate == null) {
+      } else if (row.type === '1' && row.oweDate == null) {
         let data = { outTradeNo: row.oweCode, subject: `${row.oweCode}`, totalAmount: row.owePrice, body: '' }
         this.$post('/cos/pay/alipay', data).then((r) => {
           // 添加之前先删除一下，如果单页面，页面不刷新，添加进去的内容会一直保留在页面中，二次调用form表单会出错
@@ -314,8 +313,12 @@ export default {
       this.orderStatusView.visiable = true
     },
     orderAuditOpen (row) {
-      this.orderAuditView.data = row
-      this.orderAuditView.visiable = true
+      this.$get(`/cos/order-info/orderReceiving`, {
+        'orderId': row.id
+      }).then((r) => {
+        this.$message.success('收货成功')
+        this.search()
+      })
     },
     orderViewOpen (row) {
       this.orderView.data = row

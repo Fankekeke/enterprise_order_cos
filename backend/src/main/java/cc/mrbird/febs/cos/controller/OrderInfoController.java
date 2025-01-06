@@ -120,6 +120,17 @@ public class OrderInfoController {
     }
 
     /**
+     * 订单收货
+     *
+     * @param orderId 订单ID
+     * @return 结果
+     */
+    @GetMapping("/orderReceiving")
+    public R orderReceiving(@RequestParam(name = "orderId") Integer orderId) {
+        return R.ok(orderInfoService.update(Wrappers.<OrderInfo>lambdaUpdate().set(OrderInfo::getStatus, "5").eq(OrderInfo::getId, orderId)));
+    }
+
+    /**
      * 查询订单信息详情
      *
      * @param id 主键ID
